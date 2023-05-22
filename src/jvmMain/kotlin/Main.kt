@@ -13,13 +13,18 @@ import androidx.compose.ui.window.application
 @Composable
 @Preview
 fun App() {
-    var text by remember { mutableStateOf("Hello, World!") }
+    var t = Texty("heloooo")
+    var (text, textSetter) = remember { mutableStateOf(t) }
 
     MaterialTheme {
         Button(onClick = {
-            text = "Hello, Desktop!"
-        }) {
-            Text(text)
+            val new: Texty = text.copy()
+            new.value = "Hello, I am new"
+            textSetter(new)
+
+        })
+        {
+            Text(text.value)
         }
     }
 }
@@ -28,4 +33,8 @@ fun main() = application {
     Window(onCloseRequest = ::exitApplication) {
         App()
     }
+}
+
+data class Texty(var value: String) {
+
 }
