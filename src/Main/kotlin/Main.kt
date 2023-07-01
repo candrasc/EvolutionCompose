@@ -14,24 +14,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import explosion.ControlledExplosion
 
 @Composable
 @Preview
 fun App() {
+//    MaterialTheme {
+//        Box(
+//            contentAlignment = Alignment.Center,
+//            modifier = Modifier.fillMaxSize()
+//        ) {
+//            val stopWatch = remember { StopWatch() }
+//            StopWatchDisplay(
+//                formattedTime = stopWatch.formattedTime,
+//                onStartClick = stopWatch::start,
+//                onPauseClick = stopWatch::pause,
+//                onResetClick = stopWatch::reset
+//            )
+//        }
+//    }
+
     MaterialTheme {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            val stopWatch = remember { StopWatch() }
-            StopWatchDisplay(
-                formattedTime = stopWatch.formattedTime,
-                onStartClick = stopWatch::start,
-                onPauseClick = stopWatch::pause,
-                onResetClick = stopWatch::reset
-            )
-        }
+        ControlledExplosion()
     }
+
 }
 
 fun main() = application {
