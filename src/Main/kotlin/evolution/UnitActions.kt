@@ -51,8 +51,8 @@ class DeathAction: UnitAction() {
 
         delay(2000)
 
-        for (i in 1..20) {
-            unit.size *= .75f
+        for (i in 1..30) {
+            unit.size *= .90f
             delay(100)
         }
         unit.isAlive = false
