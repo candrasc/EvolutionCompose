@@ -9,19 +9,24 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class Environment(val refeshRatePerSecond: Int = 60) {
-
-    var units: List<EUnit> = emptyList()
+    var deadUnits = mutableSetOf<LiveUnit>()
+    var liveUnits = mutableSetOf<LiveUnit>()
     private var isActive = false
     private var coroutineScope = CoroutineScope(Dispatchers.Main)
 
     var onUpdate by mutableStateOf(0)
 
-    fun addUnits(newUnits: List<EUnit>) {
-        units = units.plus(newUnits)
+    fun addLiveUnits(newUnits: MutableSet<LiveUnit>) {
+        liveUnits = liveUnits.plus(newUnits) as MutableSet<LiveUnit>
     }
 
     fun step() {
-        units.forEach { it.step() }
+        deadUnits = mutableSetOf()
+        liveUnits.forEach {
+            if (!it.isAlive) deadUnits.add(it)
+            it.step() }
+
+        liveUnits.removeAll(deadUnits)
     }
 
     fun start() {

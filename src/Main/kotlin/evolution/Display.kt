@@ -1,4 +1,5 @@
 package evolution
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -17,28 +18,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import explosion.randomInRange
 import explosion.toPx
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 @Composable
 fun runGame(sizeDisplayDP: Dp = 500.dp) {
-    val units = List(1000) {
-        EUnit(
+    val liveUnits = List(500) {
+        LiveUnit(
             color = Color(listOf(0xffea4335, 0xff4285f4, 0xfffbbc05, 0xff34a853).random()),
             xPos = randomInRange(5f, 95f), // keep the edges from clipping through side
             yPos = randomInRange(5f, 95f),
             xVelocity = randomInRange(-1f, 1f),
             yVelocity = randomInRange(-1f, 1f),
-            size = randomInRange(0.2f, 5f),
+            size = randomInRange(0.2f, 6f),
+            energy = 100f,
+            energyDecay = randomInRange(0.1f, 1f)
         )
 
-    }
+    }.toMutableSet()
 
     val environment = remember { Environment() }
-    environment.addUnits(units)
+    environment.addLiveUnits(liveUnits)
 
     Display(environment, sizeDisplayDP)
 }
 @Composable
 fun Display(environment: Environment, sizeDp: Dp) {
+
+    val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     val sizePx = sizeDp.toPx()
 
@@ -82,22 +89,22 @@ fun Display(environment: Environment, sizeDp: Dp) {
                         canvasHeightDp = with(localDensity) { coordinates.size.height.toDp() }
                     }
                     .border(width = 1.dp, color = Color(0x26000000))
-                    .size(sizeDp-30.dp)
+                    .size(sizeDp - 30.dp)
             ) {
                 drawLine(
                     color = Color.Black,
-                    start = Offset(canvasHeightPx/2, 0f),
-                    end = Offset(canvasHeightPx/2, canvasHeightPx),
+                    start = Offset(canvasHeightPx / 2, 0f),
+                    end = Offset(canvasHeightPx / 2, canvasHeightPx),
                     strokeWidth = 2.dp.toPx()
                 )
                 drawLine(
                     color = Color.Black,
-                    start = Offset(0f, canvasHeightPx/2),
-                    end = Offset(canvasHeightPx, canvasHeightPx/2),
+                    start = Offset(0f, canvasHeightPx / 2),
+                    end = Offset(canvasHeightPx, canvasHeightPx / 2),
                     strokeWidth = 2.dp.toPx()
                 )
 
-                environment.units.forEach { unit ->
+                environment.liveUnits.forEach { unit ->
                     drawCircle(
                         alpha = 1.0f,
                         color = unit.color,
@@ -106,21 +113,21 @@ fun Display(environment: Environment, sizeDp: Dp) {
                     )
                 }
 
+
+            }
+            Spacer(Modifier.height(16.dp))
+            Row(
+            ) {
+                Button(environment::start) {
+                    Text("Start")
+                }
+                Spacer(Modifier.width(16.dp))
+                Button(environment::pause) {
+                    Text("Pause")
+                }
+
             }
 
         }
-        Spacer(Modifier.height(16.dp))
-        Row(
-        ) {
-            Button(environment::start) {
-                Text("Start")
-            }
-            Spacer(Modifier.width(16.dp))
-            Button(environment::pause) {
-                Text("Pause")
-            }
-
-        }
-
     }
 }

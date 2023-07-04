@@ -1,37 +1,28 @@
 package evolution
 
+import androidx.compose.ui.graphics.Color
+import explosion.randomInRange
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 abstract class UnitAction {
-    abstract fun runAction(unit: EUnit)
+    abstract suspend fun runAction(unit: EUnit)
 }
-abstract class TimedUnitAction(val durationMilli: Long): UnitAction() {
 
-    override fun runAction(unit: EUnit) {
+class BounceAction(val durationMilli: Long, val slowPercentage: Float, val shrinkPercentage: Float): UnitAction() {
 
-        applyAction(unit)
 
-        var coroutineScope = CoroutineScope(Dispatchers.Main)
-        coroutineScope.launch {
-            delay(durationMilli)
-            removeAction(unit)
+    override suspend fun runAction(unit: EUnit) {
 
-        }
+    preDelayAction(unit)
+    delay(durationMilli)
+    postDelayAction(unit)
+
     }
-    abstract fun applyAction(unit: EUnit)
 
-    abstract fun removeAction(unit: EUnit)
-
-
-}
-
-class BounceAction(durationMilli: Long, val slowPercentage: Float, val shrinkPercentage: Float): TimedUnitAction(durationMilli) {
-
-
-    override fun applyAction(unit: EUnit) {
+    fun preDelayAction(unit: EUnit) {
 
         unit.xVelocity *= (1-slowPercentage)
         unit.yVelocity *= (1-slowPercentage)
@@ -39,7 +30,7 @@ class BounceAction(durationMilli: Long, val slowPercentage: Float, val shrinkPer
         unit.size *= (1-shrinkPercentage)
     }
 
-    override fun removeAction(unit: EUnit) {
+    fun postDelayAction(unit: EUnit) {
         unit.xVelocity /= (1-slowPercentage)
         unit.yVelocity /= (1-slowPercentage)
 
@@ -48,4 +39,23 @@ class BounceAction(durationMilli: Long, val slowPercentage: Float, val shrinkPer
 
 }
 
+class DeathAction: UnitAction() {
 
+
+    override suspend fun runAction(unit: EUnit) {
+
+        unit.xVelocity = 0f
+        unit.yVelocity = 0f
+
+        unit.color = Color(0xFF222424) // Dark grey
+
+        delay(2000)
+
+        for (i in 1..20) {
+            unit.size *= .75f
+            delay(100)
+        }
+        unit.isAlive = false
+    }
+
+}
