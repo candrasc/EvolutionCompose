@@ -47,8 +47,6 @@ fun Display(environment: Environment, sizeDp: Dp) {
 
     val coroutineScope = CoroutineScope(Dispatchers.Main)
 
-    val sizePx = sizeDp.toPx()
-
     // Get local density from composable
     val localDensity = LocalDensity.current
 
@@ -115,6 +113,7 @@ fun Display(environment: Environment, sizeDp: Dp) {
 
 
             }
+        }
             Spacer(Modifier.height(16.dp))
             Row(
             ) {
@@ -129,5 +128,5 @@ fun Display(environment: Environment, sizeDp: Dp) {
             }
 
         }
-    }
+
 }
