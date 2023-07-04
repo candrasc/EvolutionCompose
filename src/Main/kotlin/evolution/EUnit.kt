@@ -16,6 +16,7 @@ abstract class EUnit(
     var size: Float,
     var color: Color,
 ) {
+    private var coroutineScope = CoroutineScope(Dispatchers.Default)
     // All units operate in the bounds of 0 to 100. This is converted to pixels when rendered
     val minYPos = 0
     val minXPos = 0
@@ -60,10 +61,9 @@ abstract class EUnit(
     }
 
     fun executeActions() {
-        val actionScope = CoroutineScope(Dispatchers.Default)
-        actionScope.launch {
-            while (!actionQueue.isEmpty()) {
-                val action = actionQueue.remove()
+        while (!actionQueue.isEmpty()) {
+            val action = actionQueue.remove()
+            coroutineScope.launch {
                 action.runAction(this@EUnit)
             }
         }

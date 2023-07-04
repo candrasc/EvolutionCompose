@@ -27,7 +27,8 @@ class Environment(val numLiveUnits: Int, val refeshRatePerSecond: Int = 60) {
         deadUnits = mutableSetOf()
         liveUnits.forEach {
             if (!it.isAlive) deadUnits.add(it)
-            it.step() }
+            it.step()
+        }
 
         liveUnits.removeAll(deadUnits)
     }
@@ -41,7 +42,7 @@ class Environment(val numLiveUnits: Int, val refeshRatePerSecond: Int = 60) {
             while(this@Environment.isActive) {
                 delay(1000L/refeshRatePerSecond)
                 step()
-                onUpdate = (0..1_000_000).random()
+                onUpdate = (0..100).random()
 
             }
         }
@@ -66,7 +67,7 @@ class Environment(val numLiveUnits: Int, val refeshRatePerSecond: Int = 60) {
                 yPos = randomInRange(5f, 95f),
                 xVelocity = randomInRange(-1f, 1f),
                 yVelocity = randomInRange(-1f, 1f),
-                size = randomInRange(0.2f, 6f),
+                size = randomInRange(1f, 2f),
                 energy = 100f,
                 energyDecay = randomInRange(0.1f, 1f)
             )

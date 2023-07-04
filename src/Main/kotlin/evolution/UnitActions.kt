@@ -22,7 +22,7 @@ class BounceAction(val durationMilli: Long, val slowPercentage: Float, val shrin
 
     }
 
-    fun preDelayAction(unit: EUnit) {
+    private fun preDelayAction(unit: EUnit) {
 
         unit.xVelocity *= (1-slowPercentage)
         unit.yVelocity *= (1-slowPercentage)
@@ -30,7 +30,7 @@ class BounceAction(val durationMilli: Long, val slowPercentage: Float, val shrin
         unit.size *= (1-shrinkPercentage)
     }
 
-    fun postDelayAction(unit: EUnit) {
+    private fun postDelayAction(unit: EUnit) {
         unit.xVelocity /= (1-slowPercentage)
         unit.yVelocity /= (1-slowPercentage)
 
@@ -49,12 +49,12 @@ class DeathAction: UnitAction() {
 
         unit.color = Color(0xFF222424) // Dark grey
 
-        delay(2000)
+        delay(1500)
 
-        for (i in 1..30) {
-            unit.size *= .90f
-            delay(100)
-        }
+//        for (i in 1..10) {
+//            unit.size *= .90f
+//            delay(300)
+//        }
         unit.isAlive = false
     }
 

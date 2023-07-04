@@ -24,7 +24,7 @@ import kotlinx.coroutines.Dispatchers
 @Composable
 fun runGame(sizeDisplayDP: Dp = 500.dp) {
 
-    val environment = remember { Environment(numLiveUnits = 500) }
+    val environment = remember { Environment(numLiveUnits = 1000) }
     environment.spawnLiveUnits()
 
     Display(environment, sizeDisplayDP)
