@@ -12,16 +12,34 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import explosion.randomInRange
 import explosion.toPx
 
-
 @Composable
-fun Display() {
+fun runGame(sizeDisplayDP: Dp = 500.dp) {
+    val units = List(800) {
+        EUnit(
+            color = Color(listOf(0xffea4335, 0xff4285f4, 0xfffbbc05, 0xff34a853).random()),
+            xPos = randomInRange(5f, 95f), // keep the edges from clipping through side
+            yPos = randomInRange(5f, 95f),
+            xVelocity = randomInRange(-1f, 1f),
+            yVelocity = randomInRange(-1f, 1f),
+            size = randomInRange(0.2f, 5f),
+        )
 
-    val sizeDp = 500.dp
+    }
+
+    val environment = remember { Environment() }
+    environment.addUnits(units)
+
+    Display(environment, sizeDisplayDP)
+}
+@Composable
+fun Display(environment: Environment, sizeDp: Dp) {
+
     val sizePx = sizeDp.toPx()
 
     // Get local density from composable
@@ -37,20 +55,6 @@ fun Display() {
         mutableStateOf(0.dp)
     }
 
-
-    val units = List(1500) {
-            EUnit(
-                color = Color(listOf(0xffea4335, 0xff4285f4, 0xfffbbc05, 0xff34a853).random()),
-                xPos = randomInRange(0f, 100f),
-                yPos = randomInRange(0f, 100f),
-                xVelocity = randomInRange(1f, 4f),
-                yVelocity = randomInRange(1f, 4f),
-                size = sizePx * randomInRange(0.01f, 0.03f),
-            )
-
-    }
-
-    val environment = remember {Environment(units)}
 
     Column(
         modifier = Modifier,
@@ -97,7 +101,7 @@ fun Display() {
                     drawCircle(
                         alpha = 1.0f,
                         color = unit.color,
-                        radius = unit.size,
+                        radius = (unit.size / 100 * canvasHeightPx) / 2,
                         center = Offset(unit.xPos / 100 * canvasHeightPx, unit.yPos / 100 * canvasHeightPx),
                     )
                 }

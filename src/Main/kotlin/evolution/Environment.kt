@@ -8,12 +8,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class Environment(var units: List<EUnit>) {
+class Environment(val refeshRatePerSecond: Int = 60) {
 
+    var units: List<EUnit> = emptyList()
     private var isActive = false
     private var coroutineScope = CoroutineScope(Dispatchers.Main)
 
     var onUpdate by mutableStateOf(0)
+
+    fun addUnits(newUnits: List<EUnit>) {
+        units = units.plus(newUnits)
+    }
 
     fun step() {
         units.forEach { it.step() }
@@ -26,7 +31,7 @@ class Environment(var units: List<EUnit>) {
 
             this@Environment.isActive = true
             while(this@Environment.isActive) {
-                delay(10L)
+                delay(1000L/refeshRatePerSecond)
                 step()
                 onUpdate = (0..1_000_000).random()
 

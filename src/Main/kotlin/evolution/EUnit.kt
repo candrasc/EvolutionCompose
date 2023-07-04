@@ -1,6 +1,10 @@
 package evolution
 
 import androidx.compose.ui.graphics.Color
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class EUnit(
@@ -19,20 +23,47 @@ class EUnit(
     val maxYPos = 100
     val maxXPos = 100
 
-    private fun reverseDirection() {
+    private fun checkWallCollision() {
+        val unitMaxXPOS: Float = maxXPos - size/2
+        val unitMinXPOS: Float = minXPos + size/2
 
-        if (xPos >= maxXPos || xPos<=minXPos) {
+        val unitMaxYPOS: Float = maxYPos - size/2
+        val unitMinYPOS: Float = minYPos + size/2
+
+        val slowEffect = SlowEffect(1000L, .8f)
+
+        if (xPos >= unitMaxXPOS )  {
+            xPos = unitMaxXPOS
             xVelocity *= -1
+
+            slowEffect.runEffect(this)
+
+
+        } else if (xPos <= unitMinXPOS) {
+            xPos = unitMinXPOS
+            xVelocity *= -1
+
+            slowEffect.runEffect(this)
         }
 
-        if (yPos >= maxYPos || yPos<=minYPos) {
+        if (yPos >= unitMaxYPOS )  {
+            yPos = unitMaxYPOS
             yVelocity *= -1
+
+            slowEffect.runEffect(this)
+
+        } else if (yPos <= unitMinYPOS) {
+            yPos = unitMinYPOS
+            yVelocity *= -1
+
+            slowEffect.runEffect(this)
         }
     }
     fun step() {
         xPos += xVelocity
         yPos += yVelocity
-        reverseDirection()
+
+        checkWallCollision()
     }
 
 }
