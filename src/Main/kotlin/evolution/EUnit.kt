@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.*
 
 
 class EUnit(
@@ -23,47 +24,57 @@ class EUnit(
     val maxYPos = 100
     val maxXPos = 100
 
-    private fun checkWallCollision() {
-        val unitMaxXPOS: Float = maxXPos - size/2
-        val unitMinXPOS: Float = minXPos + size/2
+    val actionQueue: Queue<UnitAction> = LinkedList()
 
-        val unitMaxYPOS: Float = maxYPos - size/2
-        val unitMinYPOS: Float = minYPos + size/2
+    private fun handleWallCollision(): Boolean {
+        var isCollision = false
 
-        val bounceEffect = BounceEffect(40L, .90f, shrinkPercentage = .12f)
+        val unitMaxXPOS: Float = maxXPos - size / 2
+        val unitMinXPOS: Float = minXPos + size / 2
 
-        if (xPos >= unitMaxXPOS )  {
+        val unitMaxYPOS: Float = maxYPos - size / 2
+        val unitMinYPOS: Float = minYPos + size / 2
+
+
+        if (xPos >= unitMaxXPOS) {
             xPos = unitMaxXPOS
             xVelocity *= -1
-
-            bounceEffect.runEffect(this)
 
 
         } else if (xPos <= unitMinXPOS) {
             xPos = unitMinXPOS
             xVelocity *= -1
-
-            bounceEffect.runEffect(this)
+            isCollision = true
         }
 
-        if (yPos >= unitMaxYPOS )  {
+        if (yPos >= unitMaxYPOS) {
             yPos = unitMaxYPOS
             yVelocity *= -1
-
-            bounceEffect.runEffect(this)
+            isCollision = true
 
         } else if (yPos <= unitMinYPOS) {
             yPos = unitMinYPOS
             yVelocity *= -1
-
-            bounceEffect.runEffect(this)
+            isCollision = true
         }
+        return isCollision
     }
+
     fun step() {
         xPos += xVelocity
         yPos += yVelocity
 
-        checkWallCollision()
+        val collision = handleWallCollision()
+        if (collision) {
+            val bounceAction = BounceAction(40L, .90f, shrinkPercentage = .12f)
+            actionQueue.add(bounceAction)
+        }
+
+        while (!actionQueue.isEmpty()) {
+            val action = actionQueue.remove()
+            action.runAction(this)
+        }
+
     }
 
 }

@@ -5,30 +5,33 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-abstract class UnitEffect(val durationMilli: Long) {
+abstract class UnitAction {
+    abstract fun runAction(unit: EUnit)
+}
+abstract class TimedUnitAction(val durationMilli: Long): UnitAction() {
 
-    fun runEffect(unit: EUnit) {
+    override fun runAction(unit: EUnit) {
 
-        applyEffect(unit)
+        applyAction(unit)
 
         var coroutineScope = CoroutineScope(Dispatchers.Main)
         coroutineScope.launch {
             delay(durationMilli)
-            removeEffect(unit)
+            removeAction(unit)
 
         }
     }
-    abstract fun applyEffect(unit: EUnit)
+    abstract fun applyAction(unit: EUnit)
 
-    abstract fun removeEffect(unit: EUnit)
+    abstract fun removeAction(unit: EUnit)
 
 
 }
 
-class BounceEffect(durationMilli: Long, val slowPercentage: Float, val shrinkPercentage: Float): UnitEffect(durationMilli) {
+class BounceAction(durationMilli: Long, val slowPercentage: Float, val shrinkPercentage: Float): TimedUnitAction(durationMilli) {
 
 
-    override fun applyEffect(unit: EUnit) {
+    override fun applyAction(unit: EUnit) {
 
         unit.xVelocity *= (1-slowPercentage)
         unit.yVelocity *= (1-slowPercentage)
@@ -36,7 +39,7 @@ class BounceEffect(durationMilli: Long, val slowPercentage: Float, val shrinkPer
         unit.size *= (1-shrinkPercentage)
     }
 
-    override fun removeEffect(unit: EUnit) {
+    override fun removeAction(unit: EUnit) {
         unit.xVelocity /= (1-slowPercentage)
         unit.yVelocity /= (1-slowPercentage)
 
@@ -44,3 +47,5 @@ class BounceEffect(durationMilli: Long, val slowPercentage: Float, val shrinkPer
     }
 
 }
+
+
