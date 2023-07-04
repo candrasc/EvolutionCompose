@@ -20,7 +20,7 @@ import explosion.toPx
 
 @Composable
 fun runGame(sizeDisplayDP: Dp = 500.dp) {
-    val units = List(800) {
+    val units = List(1000) {
         EUnit(
             color = Color(listOf(0xffea4335, 0xff4285f4, 0xfffbbc05, 0xff34a853).random()),
             xPos = randomInRange(5f, 95f), // keep the edges from clipping through side

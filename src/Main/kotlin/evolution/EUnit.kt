@@ -12,7 +12,7 @@ class EUnit(
     var yPos: Float,
     var xVelocity: Float,
     var yVelocity: Float,
-    val size: Float,
+    var size: Float,
     val color: Color,
     var health: Float = 100f,
     var energy: Float = 100f
@@ -30,33 +30,33 @@ class EUnit(
         val unitMaxYPOS: Float = maxYPos - size/2
         val unitMinYPOS: Float = minYPos + size/2
 
-        val slowEffect = SlowEffect(1000L, .8f)
+        val bounceEffect = BounceEffect(40L, .90f, shrinkPercentage = .12f)
 
         if (xPos >= unitMaxXPOS )  {
             xPos = unitMaxXPOS
             xVelocity *= -1
 
-            slowEffect.runEffect(this)
+            bounceEffect.runEffect(this)
 
 
         } else if (xPos <= unitMinXPOS) {
             xPos = unitMinXPOS
             xVelocity *= -1
 
-            slowEffect.runEffect(this)
+            bounceEffect.runEffect(this)
         }
 
         if (yPos >= unitMaxYPOS )  {
             yPos = unitMaxYPOS
             yVelocity *= -1
 
-            slowEffect.runEffect(this)
+            bounceEffect.runEffect(this)
 
         } else if (yPos <= unitMinYPOS) {
             yPos = unitMinYPOS
             yVelocity *= -1
 
-            slowEffect.runEffect(this)
+            bounceEffect.runEffect(this)
         }
     }
     fun step() {

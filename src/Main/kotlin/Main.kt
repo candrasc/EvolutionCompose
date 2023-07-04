@@ -33,7 +33,7 @@ fun App() {
 
     MaterialTheme {
         //ControlledExplosion()
-        runGame(sizeDisplayDP = 700.dp)
+        runGame(sizeDisplayDP = 500.dp)
     }
 
 }

@@ -25,18 +25,22 @@ abstract class UnitEffect(val durationMilli: Long) {
 
 }
 
-class SlowEffect(durationMilli: Long, val slowPercentage: Float): UnitEffect(durationMilli) {
+class BounceEffect(durationMilli: Long, val slowPercentage: Float, val shrinkPercentage: Float): UnitEffect(durationMilli) {
 
 
     override fun applyEffect(unit: EUnit) {
 
         unit.xVelocity *= (1-slowPercentage)
         unit.yVelocity *= (1-slowPercentage)
+
+        unit.size *= (1-shrinkPercentage)
     }
 
     override fun removeEffect(unit: EUnit) {
         unit.xVelocity /= (1-slowPercentage)
         unit.yVelocity /= (1-slowPercentage)
+
+        unit.size /= (1-shrinkPercentage)
     }
 
 }
