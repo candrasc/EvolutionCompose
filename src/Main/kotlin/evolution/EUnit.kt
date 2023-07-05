@@ -39,7 +39,7 @@ abstract class EUnit(
         if (xPos >= unitMaxXPOS) {
             xPos = unitMaxXPOS
             xVelocity *= -1
-
+            isCollision = true
 
         } else if (xPos <= unitMinXPOS) {
             xPos = unitMinXPOS
