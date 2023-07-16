@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -24,8 +25,8 @@ import kotlinx.coroutines.Dispatchers
 @Composable
 fun runGame(sizeDisplayDP: Dp = 500.dp) {
 
-    val environment = remember { Environment(numLiveUnits = 1500) }
-    environment.spawnLiveUnits()
+    val environment = remember { Environment() }
+    environment.reset()
 
     Display(environment, sizeDisplayDP)
 }
@@ -97,6 +98,17 @@ fun Display(environment: Environment, sizeDp: Dp) {
                         center = Offset(unit.xPos / 100 * canvasHeightPx, unit.yPos / 100 * canvasHeightPx),
                     )
                 }
+
+                environment.foodUnits.forEach { unit ->
+                    drawCircle(
+                        alpha = 1.0f,
+                        color = unit.color,
+                        radius = (unit.size / 100 * canvasHeightPx) / 2,
+                        center = Offset(unit.xPos / 100 * canvasHeightPx, unit.yPos / 100 * canvasHeightPx),
+                        style = Stroke(3f)
+                    )
+                }
+
 
 
             }

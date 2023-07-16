@@ -6,6 +6,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.math.abs
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 
 abstract class EUnit(
@@ -16,15 +19,18 @@ abstract class EUnit(
     var size: Float,
     var color: Color,
 ) {
-    private var coroutineScope = CoroutineScope(Dispatchers.Default)
+    //private var coroutineScope = CoroutineScope(Dispatchers.Default)
     // All units operate in the bounds of 0 to 100. This is converted to pixels when rendered
     val minYPos = 0
     val minXPos = 0
     val maxYPos = 100
     val maxXPos = 100
 
-    val actionQueue: Queue<UnitAction> = LinkedList()
-    var isAlive = true
+    val actionQueue: Queue<CommonUnitAction> = LinkedList()
+    var isAlive = true // determines if unit exists in env
+    var isActive = true // determines if unit can be interacted with
+
+    var coroutineScope = CoroutineScope(Dispatchers.Default)
 
     fun handleWallCollision(): Boolean {
         var isCollision = false
@@ -59,17 +65,20 @@ abstract class EUnit(
         }
         return isCollision
     }
+    fun executeCommonActions() {
 
-    fun executeActions() {
-        while (!actionQueue.isEmpty()) {
-            val action = actionQueue.remove()
-            coroutineScope.launch {
+        coroutineScope.launch {
+            while (!actionQueue.isEmpty()) {
+                val action = actionQueue.remove()
                 action.runAction(this@EUnit)
+                }
             }
         }
-    }
 
+    abstract fun executeUniqueActions()
     abstract fun step()
+
+
 
 }
 
@@ -87,6 +96,7 @@ class LiveUnit(xPos: Float,
         yVelocity,
         size,
         color) {
+    val uniqueActionQueue: Queue<LiveUnitAction> = LinkedList()
     override fun step() {
         xPos += xVelocity
         yPos += yVelocity
@@ -99,13 +109,31 @@ class LiveUnit(xPos: Float,
 
         val collision = handleWallCollision()
         if (collision) {
-            val bounceAction = BounceAction(40L, .90f, shrinkPercentage = .12f)
+            val bounceAction = BounceAction()
             actionQueue.add(bounceAction)
         }
 
-        executeActions()
+        executeCommonActions()
+        executeUniqueActions()
     }
+
+    override fun executeUniqueActions() {
+        coroutineScope.launch {
+            while (!uniqueActionQueue.isEmpty()) {
+                val action = uniqueActionQueue.remove()
+                action.runAction(this@LiveUnit)
+            }
+        }
+    }
+
+    fun eat(food: FoodUnit) {
+        val eatAction = EatAction(food)
+        uniqueActionQueue.add(eatAction)
+    }
+
+
 }
+
 
 
 class FoodUnit(xPos: Float,
@@ -113,23 +141,36 @@ class FoodUnit(xPos: Float,
                xVelocity: Float,
                yVelocity: Float,
                size: Float,
-               color: Color): EUnit(xPos,
+               color: Color,
+               var energy: Float): EUnit(xPos,
                                     yPos,
                                     xVelocity,
                                     yVelocity,
                                     size,
                                     color) {
 
+
+    val uniqueActionQueue: Queue<FoodUnitAction> = LinkedList()
     override fun step() {
         xPos += xVelocity
         yPos += yVelocity
 
         val collision = handleWallCollision()
         if (collision) {
-            val bounceAction = BounceAction(40L, .90f, shrinkPercentage = .12f)
+            val bounceAction = BounceAction()
             actionQueue.add(bounceAction)
         }
 
-        executeActions()
+        executeCommonActions()
+        executeUniqueActions()
+    }
+
+    override fun executeUniqueActions() {
+        coroutineScope.launch {
+            while (!uniqueActionQueue.isEmpty()) {
+                val action = uniqueActionQueue.remove()
+                action.runAction(this@FoodUnit)
+            }
+        }
     }
 }

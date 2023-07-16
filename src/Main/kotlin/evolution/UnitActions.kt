@@ -6,12 +6,29 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.min
 
-abstract class UnitAction {
-    abstract suspend fun runAction(unit: EUnit)
+
+interface CommonUnitAction {
+    suspend fun runAction(unit: EUnit)
+}
+interface LiveUnitAction {
+
+    // provide defaults for methods, so they don't have to be implemented
+    suspend fun runAction(unit: LiveUnit)
+
 }
 
-class BounceAction(val durationMilli: Long, val slowPercentage: Float, val shrinkPercentage: Float): UnitAction() {
+interface FoodUnitAction {
+
+    // provide defaults for methods, so they don't have to be implemented
+    suspend fun runAction(unit: FoodUnit)
+
+}
+
+class BounceAction(val durationMilli: Long = 40L,
+                   val slowPercentage: Float = .9f,
+                   val shrinkPercentage: Float = .12f): CommonUnitAction {
 
 
     override suspend fun runAction(unit: EUnit) {
@@ -39,7 +56,7 @@ class BounceAction(val durationMilli: Long, val slowPercentage: Float, val shrin
 
 }
 
-class DeathAction: UnitAction() {
+class DeathAction: CommonUnitAction {
 
 
     override suspend fun runAction(unit: EUnit) {
@@ -48,14 +65,27 @@ class DeathAction: UnitAction() {
         unit.yVelocity = 0f
 
         unit.color = Color(0xFF222424) // Dark grey
+        unit.isActive = false
 
         delay(1500)
 
-        repeat(10) {
-            unit.size *= .90f
-            delay(300)
+        repeat(6) {
+            unit.size *= .70f
+            delay(100)
         }
         unit.isAlive = false
     }
 
+}
+
+class EatAction(private val foodUnit: FoodUnit): LiveUnitAction {
+    override suspend fun runAction(unit: LiveUnit) {
+        unit.energy = min(100f, unit.energy + foodUnit.energy)
+        foodUnit.color = Color.LightGray
+        foodUnit.xVelocity = 0f
+        foodUnit.yVelocity = 0f
+        foodUnit.isActive = false
+        delay(1500)
+        foodUnit.isAlive = false
+    }
 }
