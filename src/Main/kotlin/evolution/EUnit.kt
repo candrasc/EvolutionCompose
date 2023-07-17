@@ -1,14 +1,11 @@
 package evolution
 
 import androidx.compose.ui.graphics.Color
+import explosion.randomInRange
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.math.abs
-import kotlin.math.pow
-import kotlin.math.sqrt
 
 
 abstract class EUnit(
@@ -100,6 +97,12 @@ class LiveUnit(xPos: Float,
         size,
         color) {
     val uniqueActionQueue: Queue<LiveUnitAction> = LinkedList()
+
+    //TODO: All these attributes need setters so that they can be properly bounded
+    // for example, y direction + x direction should not exceed 1
+    // energy should not exceed 100
+    // energy decay must be greater than 0.1
+
     override fun step() {
         xPos += xDirection * speed
         yPos += yDirection * speed
@@ -132,6 +135,36 @@ class LiveUnit(xPos: Float,
     fun eat(food: FoodUnit) {
         val eatAction = EatAction(food)
         uniqueActionQueue.add(eatAction)
+    }
+
+    fun mutate(mutationProba: Float) {
+
+    }
+    fun copy(): LiveUnit {
+
+        return LiveUnit(
+            xPos = xPos,
+            yPos = yPos,
+            speed = speed,
+            xDirection = randomInRange(-1f, 1f),
+            yDirection = randomInRange(-1f, 1f),
+            size = size,
+            color = color,
+            energy = energy,
+            energyDecay = energyDecay
+        )
+    }
+
+    fun reproduce(mutationProba: Float = 0.10f): LiveUnit {
+        val newUnit = this@LiveUnit.copy()
+        newUnit.mutate(mutationProba)
+
+        val newEnergy = energy/2
+        newUnit.energy = newEnergy
+        this@LiveUnit.energy = newEnergy
+
+        return newUnit
+
     }
 
 

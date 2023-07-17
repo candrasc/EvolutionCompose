@@ -20,6 +20,9 @@ class Environment(val refeshRatePerSecond: Int = 60) {
     val foodValue = 30f
     val foodsPerSecond = 10
 
+    val energyReproductionThreshold = 50
+    val mutationProba = 0.10f
+
 
 
     var liveUnits = mutableSetOf<LiveUnit>()
@@ -56,10 +59,16 @@ class Environment(val refeshRatePerSecond: Int = 60) {
         liveUnits.removeAll(deadUnits)
         foodUnits.removeAll(eatenFoodUnits)
 
+        val newUnits = mutableSetOf<LiveUnit>()
         liveUnits.forEach { liveUnit ->
 
             if (!liveUnit.isActive) {
                 return@forEach // this is equivalent to "continue"
+            }
+
+            if (liveUnit.energy>=this.energyReproductionThreshold) {
+                val newUnit = liveUnit.reproduce(mutationProba = mutationProba)
+                newUnits.add(newUnit)
             }
 
             foodUnits.forEach FoodLoop@ { food ->
@@ -70,8 +79,10 @@ class Environment(val refeshRatePerSecond: Int = 60) {
                     liveUnit.eat(food)
                 }
             }
+
         }
 
+        liveUnits.addAll(newUnits)
 
     }
 

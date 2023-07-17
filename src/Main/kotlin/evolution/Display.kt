@@ -78,18 +78,18 @@ fun Display(environment: Environment, sizeDp: Dp) {
                     .border(width = 1.dp, color = Color(0x26000000))
                     .size(sizeDp - 30.dp)
             ) {
-                drawLine(
-                    color = Color.Black,
-                    start = Offset(canvasHeightPx / 2, 0f),
-                    end = Offset(canvasHeightPx / 2, canvasHeightPx),
-                    strokeWidth = 2.dp.toPx()
-                )
-                drawLine(
-                    color = Color.Black,
-                    start = Offset(0f, canvasHeightPx / 2),
-                    end = Offset(canvasHeightPx, canvasHeightPx / 2),
-                    strokeWidth = 2.dp.toPx()
-                )
+//                drawLine(
+//                    color = Color.Black,
+//                    start = Offset(canvasHeightPx / 2, 0f),
+//                    end = Offset(canvasHeightPx / 2, canvasHeightPx),
+//                    strokeWidth = 2.dp.toPx()
+//                )
+//                drawLine(
+//                    color = Color.Black,
+//                    start = Offset(0f, canvasHeightPx / 2),
+//                    end = Offset(canvasHeightPx, canvasHeightPx / 2),
+//                    strokeWidth = 2.dp.toPx()
+//                )
 
                 environment.liveUnits.forEach { unit ->
                     drawCircle(
