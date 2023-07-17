@@ -21,6 +21,7 @@ import explosion.randomInRange
 import explosion.toPx
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlin.math.max
 
 @Composable
 fun runGame(sizeDisplayDP: Dp = 500.dp) {

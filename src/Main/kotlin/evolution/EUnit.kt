@@ -14,8 +14,9 @@ import kotlin.math.sqrt
 abstract class EUnit(
     var xPos: Float,
     var yPos: Float,
-    var xVelocity: Float,
-    var yVelocity: Float,
+    var speed: Float,
+    var xDirection: Float,
+    var yDirection: Float,
     var size: Float,
     var color: Color,
 ) {
@@ -44,23 +45,23 @@ abstract class EUnit(
 
         if (xPos >= unitMaxXPOS) {
             xPos = unitMaxXPOS
-            xVelocity *= -1
+            xDirection *= -1
             isCollision = true
 
         } else if (xPos <= unitMinXPOS) {
             xPos = unitMinXPOS
-            xVelocity *= -1
+            xDirection *= -1
             isCollision = true
         }
 
         if (yPos >= unitMaxYPOS) {
             yPos = unitMaxYPOS
-            yVelocity *= -1
+            yDirection *= -1
             isCollision = true
 
         } else if (yPos <= unitMinYPOS) {
             yPos = unitMinYPOS
-            yVelocity *= -1
+            yDirection *= -1
             isCollision = true
         }
         return isCollision
@@ -84,22 +85,24 @@ abstract class EUnit(
 
 class LiveUnit(xPos: Float,
                yPos: Float,
-               xVelocity: Float,
-               yVelocity: Float,
+               speed: Float,
+               xDirection: Float,
+               yDirection: Float,
                size: Float,
                color: Color,
                var energy: Float = 100f,
                var energyDecay: Float = 1f):
     EUnit(xPos,
         yPos,
-        xVelocity,
-        yVelocity,
+        speed,
+        xDirection,
+        yDirection,
         size,
         color) {
     val uniqueActionQueue: Queue<LiveUnitAction> = LinkedList()
     override fun step() {
-        xPos += xVelocity
-        yPos += yVelocity
+        xPos += xDirection * speed
+        yPos += yDirection * speed
         energy -= 1*energyDecay
 
         if (energy<=0) {
@@ -138,22 +141,24 @@ class LiveUnit(xPos: Float,
 
 class FoodUnit(xPos: Float,
                yPos: Float,
-               xVelocity: Float,
-               yVelocity: Float,
+               speed: Float,
+               xDirection: Float,
+               yDirection: Float,
                size: Float,
                color: Color,
                var energy: Float): EUnit(xPos,
                                     yPos,
-                                    xVelocity,
-                                    yVelocity,
+                                    speed,
+                                    xDirection,
+                                    yDirection,
                                     size,
                                     color) {
 
 
     val uniqueActionQueue: Queue<FoodUnitAction> = LinkedList()
     override fun step() {
-        xPos += xVelocity
-        yPos += yVelocity
+        xPos += xDirection * speed
+        yPos += yDirection * speed
 
         val collision = handleWallCollision()
         if (collision) {

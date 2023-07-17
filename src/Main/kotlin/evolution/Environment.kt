@@ -15,10 +15,10 @@ import kotlin.math.sqrt
 
 class Environment(val refeshRatePerSecond: Int = 60) {
 
-    val numLiveUnits = 100
-    val maxFoodUnits = 10
+    val numLiveUnits = 250
+    val startFoodUnits = 100
     val foodValue = 30f
-    val foodsPerSecond = 1
+    val foodsPerSecond = 10
 
 
 
@@ -120,9 +120,10 @@ class Environment(val refeshRatePerSecond: Int = 60) {
             color = Color(listOf(0xffea4335, 0xff4285f4, 0xfffbbc05, 0xff34a853).random()),
             xPos = randomInRange(5f, 95f), // keep the edges from clipping through side
             yPos = randomInRange(5f, 95f),
-            xVelocity = randomInRange(-1f, 1f),
-            yVelocity = randomInRange(-1f, 1f),
-            size = randomInRange(1f, 2.5f),
+            speed = randomInRange(0.5f, 1.5f),
+            xDirection = randomInRange(-1f, 1f),
+            yDirection = randomInRange(-1f, 1f),
+            size = randomInRange(1.5f, 2.5f),
             energy = 100f,
             energyDecay = randomInRange(0.1f, 1f)
         )
@@ -140,16 +141,17 @@ class Environment(val refeshRatePerSecond: Int = 60) {
             color = Color.Magenta,
             xPos = randomInRange(5f, 95f), // keep the edges from clipping through side
             yPos = randomInRange(5f, 95f),
-            xVelocity = randomInRange(-0.2f, 0.2f),
-            yVelocity = randomInRange(-0.2f, 0.2f),
-            size = 3f,
+            speed = randomInRange(0.2f, 0.5f),
+            xDirection = randomInRange(-1f, 1f),
+            yDirection = randomInRange(-1f, 1f),
+            size = 2f,
             energy = foodValue,
         )
         foodUnits.add(food)
 
     }
 
-    fun spawnFoods(numUnits: Int = maxFoodUnits) {
+    fun spawnFoods(numUnits: Int = startFoodUnits) {
         repeat(numUnits) {
             spawnFood()
         }

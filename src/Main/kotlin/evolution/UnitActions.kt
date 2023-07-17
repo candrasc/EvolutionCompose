@@ -41,15 +41,14 @@ class BounceAction(val durationMilli: Long = 40L,
 
     private fun preDelayAction(unit: EUnit) {
 
-        unit.xVelocity *= (1-slowPercentage)
-        unit.yVelocity *= (1-slowPercentage)
+        unit.speed *= (1-slowPercentage)
+
 
         unit.size *= (1-shrinkPercentage)
     }
 
     private fun postDelayAction(unit: EUnit) {
-        unit.xVelocity /= (1-slowPercentage)
-        unit.yVelocity /= (1-slowPercentage)
+        unit.speed /= (1-slowPercentage)
 
         unit.size /= (1-shrinkPercentage)
     }
@@ -61,8 +60,7 @@ class DeathAction: CommonUnitAction {
 
     override suspend fun runAction(unit: EUnit) {
 
-        unit.xVelocity = 0f
-        unit.yVelocity = 0f
+        unit.speed = 0f
 
         unit.color = Color(0xFF222424) // Dark grey
         unit.isActive = false
@@ -82,8 +80,7 @@ class EatAction(private val foodUnit: FoodUnit): LiveUnitAction {
     override suspend fun runAction(unit: LiveUnit) {
         unit.energy = min(100f, unit.energy + foodUnit.energy)
         foodUnit.color = Color.LightGray
-        foodUnit.xVelocity = 0f
-        foodUnit.yVelocity = 0f
+        foodUnit.speed = 0f
         foodUnit.isActive = false
         delay(1500)
         foodUnit.isAlive = false
