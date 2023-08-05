@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.math.abs
 
 
 abstract class EUnit(
@@ -63,6 +64,12 @@ abstract class EUnit(
         }
         return isCollision
     }
+
+    fun distance(unit: EUnit): Double {
+
+        return Math.sqrt(Math.pow((unit.xPos - this.xPos).toDouble(), 2.0) + Math.pow((unit.yPos - this.yPos).toDouble(), 2.0)) //ERROR IN THIS LINE
+
+    }
     fun executeCommonActions() {
 
         coroutineScope.launch {
@@ -88,7 +95,8 @@ class LiveUnit(xPos: Float,
                size: Float,
                color: Color,
                var energy: Float = 100f,
-               var energyDecay: Float = 1f):
+               var energyDecay: Float = 1f,
+               var sight: Float = 5f):
     EUnit(xPos,
         yPos,
         speed,
@@ -164,6 +172,16 @@ class LiveUnit(xPos: Float,
         this@LiveUnit.energy = newEnergy
 
         return newUnit
+
+    }
+
+    fun checkFollow(unit: EUnit) {
+
+        val dist = abs(this.distance(unit)) - (this.size + unit.size)/2
+        if (dist <= this.sight) {
+            val followAction = FollowAction(unit)
+            uniqueActionQueue.add(followAction)
+        }
 
     }
 

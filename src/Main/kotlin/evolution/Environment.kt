@@ -15,12 +15,14 @@ import kotlin.math.sqrt
 
 class Environment(val refeshRatePerSecond: Int = 60) {
 
-    val numLiveUnits = 250
-    val startFoodUnits = 100
+    val numLiveUnits = 50
+    val startFoodUnits = 1
     val foodValue = 30f
-    val foodsPerSecond = 10
+    val foodsPerSecond = 3
 
-    val energyReproductionThreshold = 50
+    val minStartingEnergy = 50f
+    val maxStartingEnergy = 79f
+    val energyReproductionThreshold = 80f
     val mutationProba = 0.10f
 
 
@@ -78,6 +80,8 @@ class Environment(val refeshRatePerSecond: Int = 60) {
                 if (checkUnitCollision(food, liveUnit)) {
                     liveUnit.eat(food)
                 }
+
+                liveUnit.checkFollow(food)
             }
 
         }
@@ -131,12 +135,13 @@ class Environment(val refeshRatePerSecond: Int = 60) {
             color = Color(listOf(0xffea4335, 0xff4285f4, 0xfffbbc05, 0xff34a853).random()),
             xPos = randomInRange(5f, 95f), // keep the edges from clipping through side
             yPos = randomInRange(5f, 95f),
-            speed = randomInRange(0.5f, 1.5f),
+            speed = randomInRange(0.5f, 1f),
             xDirection = randomInRange(-1f, 1f),
             yDirection = randomInRange(-1f, 1f),
             size = randomInRange(1.5f, 2.5f),
-            energy = 100f,
-            energyDecay = randomInRange(0.1f, 1f)
+            energy = randomInRange(minStartingEnergy, maxStartingEnergy),
+            energyDecay = randomInRange(0.1f, 1f),
+            sight = randomInRange(0.1f, 5f)
         )
         liveUnits.add(unit)
     }

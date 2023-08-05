@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 import kotlin.math.min
 
 
@@ -67,8 +68,8 @@ class DeathAction: CommonUnitAction {
 
         delay(1500)
 
-        repeat(6) {
-            unit.size *= .70f
+        repeat(10) {
+            unit.size *= .80f
             delay(100)
         }
         unit.isAlive = false
@@ -84,5 +85,18 @@ class EatAction(private val foodUnit: FoodUnit): LiveUnitAction {
         foodUnit.isActive = false
         delay(1500)
         foodUnit.isAlive = false
+    }
+}
+
+class FollowAction(private val otherUnit: EUnit): LiveUnitAction {
+
+    override suspend fun runAction(unit: LiveUnit) {
+        val xDiff = otherUnit.xPos - unit.xPos
+        val yDiff = otherUnit.yPos - unit.yPos
+
+        unit.xDirection = xDiff/(abs(xDiff) + abs(yDiff))
+        unit.yDirection = yDiff/(abs(xDiff) + abs(yDiff))
+
+        //delay(200)
     }
 }

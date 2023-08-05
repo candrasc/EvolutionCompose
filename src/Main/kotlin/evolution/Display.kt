@@ -34,8 +34,6 @@ fun runGame(sizeDisplayDP: Dp = 500.dp) {
 @Composable
 fun Display(environment: Environment, sizeDp: Dp) {
 
-    val coroutineScope = CoroutineScope(Dispatchers.Main)
-
     // Get local density from composable
     val localDensity = LocalDensity.current
 
@@ -98,6 +96,16 @@ fun Display(environment: Environment, sizeDp: Dp) {
                         radius = (unit.size / 100 * canvasHeightPx) / 2,
                         center = Offset(unit.xPos / 100 * canvasHeightPx, unit.yPos / 100 * canvasHeightPx),
                     )
+                    if (unit.isActive) {
+                        drawCircle(
+                            alpha = 0.1f,
+                            color = unit.color,
+                            radius = ((unit.size + unit.sight) / 100 * canvasHeightPx),
+                            center = Offset(unit.xPos / 100 * canvasHeightPx, unit.yPos / 100 * canvasHeightPx),
+                        )
+                    }
+
+
                 }
 
                 environment.foodUnits.forEach { unit ->

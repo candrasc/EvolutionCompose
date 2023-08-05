@@ -16,20 +16,6 @@ import explosion.randomInRange
 @Composable
 @Preview
 fun App() {
-//    MaterialTheme {
-//        Box(
-//            contentAlignment = Alignment.Center,
-//            modifier = Modifier.fillMaxSize()
-//        ) {
-//            val stopWatch = remember { StopWatch() }
-//            StopWatchDisplay(
-//                formattedTime = stopWatch.formattedTime,
-//                onStartClick = stopWatch::start,
-//                onPauseClick = stopWatch::pause,
-//                onResetClick = stopWatch::reset
-//            )
-//        }
-//    }
 
     MaterialTheme {
         //ControlledExplosion()
