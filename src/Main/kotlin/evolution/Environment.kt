@@ -16,12 +16,12 @@ import kotlin.math.pow
 import kotlin.math.roundToLong
 import kotlin.math.sqrt
 
-class Environment(val refeshRatePerSecond: Int = 60) {
+class Environment {
 
-    val startingLiveUnits = 50
+    var startingLiveUnits = 50
     val startFoodUnits = 1
     val foodValue = 30f
-    val foodsPerSecond = 3
+    var foodPerSecond = 4
 
     val minStartingEnergy = 50f
     val maxStartingEnergy = 79f
@@ -103,20 +103,19 @@ class Environment(val refeshRatePerSecond: Int = 60) {
 
             this@Environment.isActive = true
             while(this@Environment.isActive) {
-                delay(1000L/refeshRatePerSecond)
+                delay(1000L/60) // 60 frames a second
                 step()
-                onUpdate = (0..100).random()
+                onUpdate = (0..1000).random()
 
             }
         }
 
-        val foodDelay = (1000L/foodsPerSecond).toLong()
         coroutineScope.launch {
 
             this@Environment.isActive = true
             while(this@Environment.isActive) {
-                delay(foodDelay)
-                spawnFoods(1)
+                delay(1000)
+                spawnfood(foodPerSecond)
 
             }
         }
@@ -133,7 +132,7 @@ class Environment(val refeshRatePerSecond: Int = 60) {
         deadUnits = mutableSetOf()
         eatenFoodUnits = mutableSetOf()
         spawnLiveUnits()
-        spawnFoods()
+        spawnfood()
     }
 
     fun spawnLiveUnit() {
@@ -146,7 +145,7 @@ class Environment(val refeshRatePerSecond: Int = 60) {
             yDirection = randomInRange(-1f, 1f),
             size = randomInRange(1.5f, 2.5f),
             energy = randomInRange(minStartingEnergy, maxStartingEnergy),
-            energyEfficiency = randomInRange(0.1f, 1f),
+            energyEfficiency = randomInRange(0.1f, 0.9f),
             sight = randomInRange(0.1f, 5f)
         )
         liveUnits.add(unit)
@@ -173,7 +172,7 @@ class Environment(val refeshRatePerSecond: Int = 60) {
 
     }
 
-    fun spawnFoods(numUnits: Int = startFoodUnits) {
+    fun spawnfood(numUnits: Int = startFoodUnits) {
         repeat(numUnits) {
             spawnFood()
         }

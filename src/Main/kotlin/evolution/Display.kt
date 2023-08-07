@@ -3,9 +3,9 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,7 +14,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,12 +59,92 @@ fun Display(environment: Environment, sizeDp: Dp) {
             modifier = Modifier.weight(2f)
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .background(Color(0xffea4335)),
+                .background(Color(0xFF86ACEB)),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Spawn Random Unit")
-            Text("Spawn Custom Unit")
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(15.dp),
+                elevation = 10.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(15.dp)
+                ) {
+
+                    var numStartingUnits by remember {
+                        mutableStateOf(environment.startingLiveUnits)
+                    }
+
+                    var foodPerSecond by remember {
+                        mutableStateOf(environment.foodPerSecond)
+                    }
+
+                    Slider(
+                        value = numStartingUnits.toFloat(),
+                        onValueChange = { sliderValue_ ->
+                            numStartingUnits = sliderValue_.toInt()
+                        },
+                        onValueChangeFinished = {
+                            // this is called when the user completed selecting the value
+                            environment.startingLiveUnits = numStartingUnits
+                        },
+                        valueRange = 0f..1000f,
+                        steps = 1000,
+                        colors = SliderDefaults.colors(
+                            thumbColor = Color(0xFF4552B8),
+                            activeTrackColor = Color(0xFF9FB8E0),
+                            inactiveTrackColor = Color(0xFF9FB8E0),
+                        )
+                    )
+
+                    Text(
+                        buildAnnotatedString {
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
+                            ) {
+                                append("Num starting units: ")
+                            }
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.W900)) {
+                                append(numStartingUnits.toString())
+                            }
+                        }
+                    )
+
+                    Slider(
+                        value = foodPerSecond.toFloat(),
+                        onValueChange = { sliderValue_ ->
+                            foodPerSecond = sliderValue_.toInt()
+                        },
+                        onValueChangeFinished = {
+                            // this is called when the user completed selecting the value
+                            environment.foodPerSecond = foodPerSecond
+                        },
+                        valueRange = 1f..100f,
+                        steps = 50,
+                        colors = SliderDefaults.colors(
+                            thumbColor = Color(0xFF4552B8),
+                            activeTrackColor = Color(0xFF9FB8E0),
+                            inactiveTrackColor = Color(0xFF9FB8E0),
+                        )
+                    )
+
+                    Text(
+                        buildAnnotatedString {
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
+                            ) {
+                                append("Food Per Second: ")
+                            }
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.W900)) {
+                                append(foodPerSecond.toString())
+                            }
+                        }
+                    )
+                }
+            }
+
+
         }
 
         Column(
@@ -92,18 +175,6 @@ fun Display(environment: Environment, sizeDp: Dp) {
                         .border(width = 1.dp, color = Color(0x26000000))
                         .size(sizeDp)
                 ) {
-//                drawLine(
-//                    color = Color.Black,
-//                    start = Offset(canvasHeightPx / 2, 0f),
-//                    end = Offset(canvasHeightPx / 2, canvasHeightPx),
-//                    strokeWidth = 2.dp.toPx()
-//                )
-//                drawLine(
-//                    color = Color.Black,
-//                    start = Offset(0f, canvasHeightPx / 2),
-//                    end = Offset(canvasHeightPx, canvasHeightPx / 2),
-//                    strokeWidth = 2.dp.toPx()
-//                )
 
                     environment.liveUnits.forEach { unit ->
                         drawCircle(
