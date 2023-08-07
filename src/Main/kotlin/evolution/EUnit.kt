@@ -12,7 +12,7 @@ import kotlin.math.abs
 abstract class EUnit(
     var xPos: Float,
     var yPos: Float,
-    var speed: Float,
+    open var speed: Float,
     var xDirection: Float,
     var yDirection: Float,
     var size: Float,
@@ -87,6 +87,19 @@ abstract class EUnit(
 
 }
 
+data class GeneticAttribute(
+    val attribute: Float
+) {
+    init {
+        if (attribute<0 || attribute>100) {
+            throw IllegalArgumentException("Attribute must be between 0 and 100")
+        }
+    }
+}
+
+fun Float.toGenetic() = GeneticAttribute(this)
+
+
 class LiveUnit(xPos: Float,
                yPos: Float,
                speed: Float,
@@ -104,7 +117,10 @@ class LiveUnit(xPos: Float,
         yDirection,
         size,
         color) {
+
+    val geneticAttributes = mutableSetOf<GeneticAttribute>()
     val uniqueActionQueue: Queue<LiveUnitAction> = LinkedList()
+
 
     //TODO: All these attributes need setters so that they can be properly bounded
     // for example, y direction + x direction should not exceed 1
@@ -146,6 +162,10 @@ class LiveUnit(xPos: Float,
     }
 
     fun mutate(mutationProba: Float) {
+
+        // each trait out of 100
+        // then multiply them by some static value
+        // rand each out of 100 and softmax it
 
     }
     fun copy(): LiveUnit {

@@ -1,6 +1,7 @@
 package evolution
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
@@ -47,35 +48,49 @@ fun Display(environment: Environment, sizeDp: Dp) {
         mutableStateOf(0.dp)
     }
 
+    Row() {
 
-    Column(
-        modifier = Modifier,
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = environment.onUpdate.toString(),
-            fontWeight = FontWeight.Bold,
-            fontSize = 30.sp,
-            color = Color.Black
-        )
 
-        Spacer(Modifier.height(16.dp))
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            modifier = Modifier.weight(1f)
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .background(Color(0xffea4335)),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Canvas(
-                modifier = Modifier
-                    .onGloballyPositioned { coordinates ->
-                        // Set column height using the LayoutCoordinates
-                        canvasHeightPx = coordinates.size.height.toFloat()
-                        canvasHeightDp = with(localDensity) { coordinates.size.height.toDp() }
-                    }
-                    .border(width = 1.dp, color = Color(0x26000000))
-                    .size(sizeDp - 30.dp)
+            Text("Spawn Random Unit")
+            Text("Spawn Custom Unit")
+        }
+
+        Column(
+            modifier = Modifier.weight(3f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = environment.onUpdate.toString(),
+                fontWeight = FontWeight.Bold,
+                fontSize = 30.sp,
+                color = Color.Black
+            )
+
+            Spacer(Modifier.height(16.dp))
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
             ) {
+                Canvas(
+                    modifier = Modifier
+                        .onGloballyPositioned { coordinates ->
+                            // Set column height using the LayoutCoordinates
+                            canvasHeightPx = coordinates.size.height.toFloat()
+                            canvasHeightDp = with(localDensity) { coordinates.size.height.toDp() }
+                        }
+                        .border(width = 1.dp, color = Color(0x26000000))
+                        .size(sizeDp)
+                ) {
 //                drawLine(
 //                    color = Color.Black,
 //                    start = Offset(canvasHeightPx / 2, 0f),
@@ -89,39 +104,38 @@ fun Display(environment: Environment, sizeDp: Dp) {
 //                    strokeWidth = 2.dp.toPx()
 //                )
 
-                environment.liveUnits.forEach { unit ->
-                    drawCircle(
-                        alpha = 1.0f,
-                        color = unit.color,
-                        radius = (unit.size / 100 * canvasHeightPx) / 2,
-                        center = Offset(unit.xPos / 100 * canvasHeightPx, unit.yPos / 100 * canvasHeightPx),
-                    )
-                    if (unit.isActive) {
+                    environment.liveUnits.forEach { unit ->
                         drawCircle(
-                            alpha = 0.1f,
+                            alpha = 1.0f,
                             color = unit.color,
-                            radius = ((unit.sight) / 100 * canvasHeightPx),
+                            radius = (unit.size / 100 * canvasHeightPx) / 2,
                             center = Offset(unit.xPos / 100 * canvasHeightPx, unit.yPos / 100 * canvasHeightPx),
+                        )
+                        if (unit.isActive) {
+                            drawCircle(
+                                alpha = 0.1f,
+                                color = unit.color,
+                                radius = ((unit.sight) / 100 * canvasHeightPx),
+                                center = Offset(unit.xPos / 100 * canvasHeightPx, unit.yPos / 100 * canvasHeightPx),
+                            )
+                        }
+
+
+                    }
+
+                    environment.foodUnits.forEach { unit ->
+                        drawCircle(
+                            alpha = 1.0f,
+                            color = unit.color,
+                            radius = (unit.size / 100 * canvasHeightPx) / 2,
+                            center = Offset(unit.xPos / 100 * canvasHeightPx, unit.yPos / 100 * canvasHeightPx),
+                            style = Stroke(3f)
                         )
                     }
 
 
                 }
-
-                environment.foodUnits.forEach { unit ->
-                    drawCircle(
-                        alpha = 1.0f,
-                        color = unit.color,
-                        radius = (unit.size / 100 * canvasHeightPx) / 2,
-                        center = Offset(unit.xPos / 100 * canvasHeightPx, unit.yPos / 100 * canvasHeightPx),
-                        style = Stroke(3f)
-                    )
-                }
-
-
-
             }
-        }
             Spacer(Modifier.height(16.dp))
             Row(
             ) {
@@ -140,5 +154,29 @@ fun Display(environment: Environment, sizeDp: Dp) {
             }
 
         }
+
+        Column(
+            modifier = Modifier.weight(1f)
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .background(Color(0xFF86ACEB)),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+
+            Text("Number of units: ${environment.numLiveUnits}",
+                fontSize = 15.sp)
+
+            Text("Average Sight: ${environment.averageSight}",
+                fontSize = 15.sp)
+
+            Text("Average Hunger Decay: ${environment.averageHungerDecay}",
+                fontSize = 15.sp)
+
+
+        }
+
+    }
 
 }

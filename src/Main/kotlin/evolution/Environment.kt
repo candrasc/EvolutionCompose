@@ -9,13 +9,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Dictionary
 import kotlin.math.abs
 import kotlin.math.pow
+import kotlin.math.roundToLong
 import kotlin.math.sqrt
 
 class Environment(val refeshRatePerSecond: Int = 60) {
 
-    val numLiveUnits = 50
+    val startingLiveUnits = 50
     val startFoodUnits = 1
     val foodValue = 30f
     val foodsPerSecond = 3
@@ -24,8 +26,6 @@ class Environment(val refeshRatePerSecond: Int = 60) {
     val maxStartingEnergy = 79f
     val energyReproductionThreshold = 80f
     val mutationProba = 0.10f
-
-
 
     var liveUnits = mutableSetOf<LiveUnit>()
     var foodUnits = mutableSetOf<FoodUnit>()
@@ -39,6 +39,14 @@ class Environment(val refeshRatePerSecond: Int = 60) {
 
     var onUpdate by mutableStateOf(0)
 
+    var numLiveUnits: Int = 0
+        get() = liveUnits.size
+
+    var averageSight: Double = 0.0
+        get() = liveUnits.sumOf { it.sight.toDouble()/numLiveUnits }
+
+    var averageHungerDecay: Double = 0.0
+        get() = liveUnits.sumOf { it.energyDecay.toDouble()/numLiveUnits }
 
     fun step() {
 
@@ -46,16 +54,13 @@ class Environment(val refeshRatePerSecond: Int = 60) {
             if (!it.isAlive) {
                 deadUnits.add(it)
             }
-            if (it.isActive) {
-                it.step()
-            }
+            it.step()
+
         }
 
         foodUnits.forEach {
             if (!it.isAlive) eatenFoodUnits.add(it)
-            if (it.isActive) {
-                it.step()
-            }
+            it.step()
         }
 
         liveUnits.removeAll(deadUnits)
@@ -146,7 +151,7 @@ class Environment(val refeshRatePerSecond: Int = 60) {
         liveUnits.add(unit)
     }
 
-    fun spawnLiveUnits(numUnits: Int = numLiveUnits) {
+    fun spawnLiveUnits(numUnits: Int = startingLiveUnits) {
         repeat(numUnits) {
             spawnLiveUnit()
         }
