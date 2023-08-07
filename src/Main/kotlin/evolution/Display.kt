@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import evolution.DisplayComponents.MetricCard
 import explosion.randomInRange
 import explosion.toPx
 import kotlinx.coroutines.CoroutineScope
@@ -52,7 +53,7 @@ fun Display(environment: Environment, sizeDp: Dp) {
 
 
         Column(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(2f)
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .background(Color(0xffea4335)),
@@ -64,7 +65,7 @@ fun Display(environment: Environment, sizeDp: Dp) {
         }
 
         Column(
-            modifier = Modifier.weight(3f),
+            modifier = Modifier.weight(5f),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -156,7 +157,7 @@ fun Display(environment: Environment, sizeDp: Dp) {
         }
 
         Column(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(2f)
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .background(Color(0xFF86ACEB)),
@@ -164,17 +165,9 @@ fun Display(environment: Environment, sizeDp: Dp) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-
-            Text("Number of units: ${environment.numLiveUnits}",
-                fontSize = 15.sp)
-
-            Text("Average Sight: ${environment.averageSight}",
-                fontSize = 15.sp)
-
-            Text("Average Hunger Decay: ${environment.averageHungerDecay}",
-                fontSize = 15.sp)
-
-
+            MetricCard("Number of units", environment.numLiveUnits.toString())
+            MetricCard("Average Sight", environment.averageSight.toString())
+            MetricCard("Average Efficiency", environment.averageEnergyEfficiency.toString())
         }
 
     }

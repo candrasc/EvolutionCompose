@@ -108,7 +108,7 @@ class LiveUnit(xPos: Float,
                size: Float,
                color: Color,
                var energy: Float = 100f,
-               var energyDecay: Float = 1f,
+               var energyEfficiency: Float = 1f,
                var sight: Float = 5f):
     EUnit(xPos,
         yPos,
@@ -130,7 +130,7 @@ class LiveUnit(xPos: Float,
     override fun step() {
         xPos += xDirection * speed
         yPos += yDirection * speed
-        energy -= 1*energyDecay
+        energy -= (1-energyEfficiency)
 
         if (energy<=0) {
             val deathAction = DeathAction()
@@ -179,7 +179,7 @@ class LiveUnit(xPos: Float,
             size = size,
             color = color,
             energy = energy,
-            energyDecay = energyDecay
+            energyEfficiency = energyEfficiency
         )
     }
 

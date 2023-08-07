@@ -2,6 +2,7 @@ package explosion
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.*
+import java.math.RoundingMode
 import java.util.*
 
 fun Float.mapInRange(inMin: Float, inMax: Float, outMin: Float, outMax: Float): Float {
@@ -19,7 +20,8 @@ fun Dp.toPx() = with(LocalDensity.current) { this@toPx.toPx() }
 fun Int.toPx(dpRatio: Float) = this * dpRatio
 fun Float.toPx(dpRatio: Float) = this * dpRatio
 fun Double.toPx(dpRatio: Float) = this * dpRatio
-
+fun Float.round(precision: Int=2) = this.toBigDecimal().setScale(precision, RoundingMode.UP).toFloat()
+fun Double.round(precision: Int=2) = this.toBigDecimal().setScale(precision, RoundingMode.UP).toDouble()
 
 private val random = Random()
 fun Float.randomTillZero() = this * random.nextFloat()

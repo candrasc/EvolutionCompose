@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import explosion.randomInRange
+import explosion.round
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -43,10 +44,10 @@ class Environment(val refeshRatePerSecond: Int = 60) {
         get() = liveUnits.size
 
     var averageSight: Double = 0.0
-        get() = liveUnits.sumOf { it.sight.toDouble()/numLiveUnits }
+        get() = liveUnits.sumOf { it.sight.toDouble()/numLiveUnits }.round()
 
-    var averageHungerDecay: Double = 0.0
-        get() = liveUnits.sumOf { it.energyDecay.toDouble()/numLiveUnits }
+    var averageEnergyEfficiency: Double = 0.0
+        get() = liveUnits.sumOf { it.energyEfficiency.toDouble()/numLiveUnits }.round()
 
     fun step() {
 
@@ -145,7 +146,7 @@ class Environment(val refeshRatePerSecond: Int = 60) {
             yDirection = randomInRange(-1f, 1f),
             size = randomInRange(1.5f, 2.5f),
             energy = randomInRange(minStartingEnergy, maxStartingEnergy),
-            energyDecay = randomInRange(0.1f, 1f),
+            energyEfficiency = randomInRange(0.1f, 1f),
             sight = randomInRange(0.1f, 5f)
         )
         liveUnits.add(unit)
