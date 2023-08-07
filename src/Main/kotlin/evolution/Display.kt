@@ -96,7 +96,6 @@ fun Display(environment: Environment, sizeDp: Dp) {
                         colors = SliderDefaults.colors(
                             thumbColor = Color(0xFF4552B8),
                             activeTrackColor = Color(0xFF9FB8E0),
-                            inactiveTrackColor = Color(0xFF9FB8E0),
                         )
                     )
 
@@ -121,12 +120,12 @@ fun Display(environment: Environment, sizeDp: Dp) {
                             // this is called when the user completed selecting the value
                             environment.foodPerSecond = foodPerSecond
                         },
-                        valueRange = 1f..100f,
-                        steps = 50,
+                        valueRange = 1f..30f,
+                        steps = 30,
                         colors = SliderDefaults.colors(
                             thumbColor = Color(0xFF4552B8),
                             activeTrackColor = Color(0xFF9FB8E0),
-                            inactiveTrackColor = Color(0xFF9FB8E0),
+
                         )
                     )
 
