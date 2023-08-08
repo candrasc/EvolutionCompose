@@ -199,8 +199,11 @@ class LiveUnit(xPos: Float,
 
         val dist = abs(this.distance(unit)) - (this.size + unit.size)/2
         if (dist <= this.sight) {
-            val followAction = FollowAction(unit)
-            uniqueActionQueue.add(followAction)
+            val xDiff = unit.xPos - this.xPos
+            val yDiff = unit.yPos - this.yPos
+
+            this.xDirection = xDiff/(abs(xDiff) + abs(yDiff))
+            this.yDirection = yDiff/(abs(xDiff) + abs(yDiff))
         }
 
     }

@@ -10,11 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.Dictionary
-import kotlin.math.abs
-import kotlin.math.pow
-import kotlin.math.roundToLong
-import kotlin.math.sqrt
+import kotlin.math.*
 
 class Environment {
 
@@ -23,8 +19,6 @@ class Environment {
     val foodValue = 30f
     var foodPerSecond = 4
 
-    val minStartingEnergy = 50f
-    val maxStartingEnergy = 79f
     val energyReproductionThreshold = 80f
     val mutationProba = 0.10f
 
@@ -114,8 +108,8 @@ class Environment {
 
             this@Environment.isActive = true
             while(this@Environment.isActive) {
-                delay(1000)
-                spawnfood(foodPerSecond)
+                delay(1000/2)
+                spawnfood(max(foodPerSecond/2, 1))
 
             }
         }
@@ -143,8 +137,8 @@ class Environment {
             speed = randomInRange(0.5f, 1f),
             xDirection = randomInRange(-1f, 1f),
             yDirection = randomInRange(-1f, 1f),
-            size = randomInRange(1.5f, 2.5f),
-            energy = randomInRange(minStartingEnergy, maxStartingEnergy),
+            size = 2f,
+            energy = energyReproductionThreshold - 1,
             energyEfficiency = randomInRange(0.1f, 0.9f),
             sight = randomInRange(0.1f, 5f)
         )

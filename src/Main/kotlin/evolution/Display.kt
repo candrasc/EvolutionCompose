@@ -22,11 +22,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import evolution.DisplayComponents.MetricCard
-import explosion.randomInRange
-import explosion.toPx
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlin.math.max
 
 @Composable
 fun runGame(sizeDisplayDP: Dp = 500.dp) {
@@ -113,15 +108,15 @@ fun Display(environment: Environment, sizeDp: Dp) {
 
                     Slider(
                         value = foodPerSecond.toFloat(),
-                        onValueChange = { sliderValue_ ->
-                            foodPerSecond = sliderValue_.toInt()
+                        onValueChange = { sliderValue ->
+                            foodPerSecond = sliderValue.toInt()
                         },
                         onValueChangeFinished = {
                             // this is called when the user completed selecting the value
                             environment.foodPerSecond = foodPerSecond
                         },
-                        valueRange = 1f..30f,
-                        steps = 30,
+                        valueRange = 1f..40f,
+                        steps = 40,
                         colors = SliderDefaults.colors(
                             thumbColor = Color(0xFF4552B8),
                             activeTrackColor = Color(0xFF9FB8E0),
