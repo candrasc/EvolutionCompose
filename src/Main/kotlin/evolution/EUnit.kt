@@ -7,6 +7,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.math.abs
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 
 abstract class EUnit(
@@ -67,7 +69,7 @@ abstract class EUnit(
 
     fun distance(unit: EUnit): Double {
 
-        return Math.sqrt(Math.pow((unit.xPos - this.xPos).toDouble(), 2.0) + Math.pow((unit.yPos - this.yPos).toDouble(), 2.0)) //ERROR IN THIS LINE
+        return sqrt((unit.xPos - this.xPos).toDouble().pow(2.0) + (unit.yPos - this.yPos).toDouble().pow(2.0))
 
     }
     fun executeCommonActions() {

@@ -12,6 +12,21 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.*
 
+// Notes
+
+/*
+Notes
+
+Break interactions in 4 quadrants to reduce n2 issues
+- Have all the unit actions get dispatched by the environment rather than dispatched by each unit individually
+
+Adding attacking.
+- Units can have a strength score.
+- If a unit is stronger than another it tries to kill it and turns red while chasing
+- If a unit is weaker than another, it tries to run away and turns green
+- All units are blue by default
+* */
+
 class Environment {
 
     var startingLiveUnits = 50
@@ -30,7 +45,7 @@ class Environment {
 
 
     private var isActive = false
-    private var coroutineScope = CoroutineScope(Dispatchers.Main)
+    private var coroutineScope = CoroutineScope(Dispatchers.Default)
 
     var onUpdate by mutableStateOf(0)
 
