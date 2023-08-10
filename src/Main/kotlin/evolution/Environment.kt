@@ -45,7 +45,7 @@ class Environment {
 
 
     private var isActive = false
-    private var coroutineScope = CoroutineScope(Dispatchers.Default)
+    private var coroutineScope = CoroutineScope(Dispatchers.Main)
 
     var onUpdate by mutableStateOf(0)
 
@@ -58,9 +58,11 @@ class Environment {
     var averageEnergyEfficiency: Double = 0.0
         get() = liveUnits.sumOf { it.energyEfficiency.toDouble()/numLiveUnits }.round()
 
-    fun step() {
 
-        liveUnits.forEach {
+
+    fun stepQuadrant(quadLiveUnits: List<LiveUnit>, quadFoodUnits: List<FoodUnit>) {
+
+        quadLiveUnits.forEach {
             if (!it.isAlive) {
                 deadUnits.add(it)
             }
@@ -68,16 +70,15 @@ class Environment {
 
         }
 
-        foodUnits.forEach {
-            if (!it.isAlive) eatenFoodUnits.add(it)
+        quadFoodUnits.forEach {
+            if (!it.isAlive) {
+                eatenFoodUnits.add(it)
+            }
             it.step()
         }
 
-        liveUnits.removeAll(deadUnits)
-        foodUnits.removeAll(eatenFoodUnits)
-
         val newUnits = mutableSetOf<LiveUnit>()
-        liveUnits.forEach { liveUnit ->
+        quadLiveUnits.forEach { liveUnit ->
 
             if (!liveUnit.isActive) {
                 return@forEach // this is equivalent to "continue"
@@ -88,7 +89,7 @@ class Environment {
                 newUnits.add(newUnit)
             }
 
-            foodUnits.forEach FoodLoop@ { food ->
+            quadFoodUnits.forEach FoodLoop@ { food ->
 
                 if (!food.isActive) (return@FoodLoop)
 
@@ -97,11 +98,38 @@ class Environment {
                 }
 
                 liveUnit.checkFollow(food)
+
             }
 
         }
 
         liveUnits.addAll(newUnits)
+
+    }
+
+    fun step() {
+
+        val liveQuadrants = liveUnits.groupBy { it.quadrant }
+        val foodQuadrants = foodUnits.groupBy { it.quadrant }
+
+        for (quadrant in liveQuadrants.keys) {
+            coroutineScope.launch{
+                var liveQuad = liveQuadrants[quadrant]
+                var foodQuad = foodQuadrants[quadrant]
+
+                if (liveQuad==null) {
+                    liveQuad = emptyList()
+                }
+                if (foodQuad==null) {
+                    foodQuad = emptyList()
+                }
+
+                stepQuadrant(liveQuad, foodQuad)
+
+        }}
+
+        liveUnits.removeAll(deadUnits)
+        foodUnits.removeAll(eatenFoodUnits)
 
     }
 
@@ -123,8 +151,8 @@ class Environment {
 
             this@Environment.isActive = true
             while(this@Environment.isActive) {
-                delay(1000/2)
-                spawnfood(max(foodPerSecond/2, 1))
+                delay(1000)
+                spawnfood(max(foodPerSecond, 1))
 
             }
         }
@@ -146,7 +174,7 @@ class Environment {
 
     fun spawnLiveUnit() {
         val unit = LiveUnit(
-            color = Color(listOf(0xffea4335, 0xff4285f4, 0xfffbbc05, 0xff34a853).random()),
+
             xPos = randomInRange(5f, 95f), // keep the edges from clipping through side
             yPos = randomInRange(5f, 95f),
             speed = randomInRange(0.5f, 1f),
@@ -168,7 +196,6 @@ class Environment {
 
     fun spawnFood() {
         val food = FoodUnit(
-            color = Color.Magenta,
             xPos = randomInRange(5f, 95f), // keep the edges from clipping through side
             yPos = randomInRange(5f, 95f),
             speed = randomInRange(0.2f, 0.5f),
@@ -193,6 +220,5 @@ class Environment {
         return distance <= (unit1.size / 2 + unit.size /2) && (distance >= abs(unit1.size/2 - unit.size/2))
 
     }
-
 
 }

@@ -51,14 +51,14 @@ class BounceAction(val durationMilli: Long = 40L,
 
 }
 
-class DeathAction: CommonUnitAction {
+class DeathAction: LiveUnitAction {
 
 
-    override suspend fun runAction(unit: EUnit) {
+    override suspend fun runAction(unit: LiveUnit) {
 
         unit.speed = 0f
 
-        unit.color = Color(0xFF222424) // Dark grey
+        unit.color = Colors.deathColor // Dark grey
         unit.isActive = false
 
         delay(1500)

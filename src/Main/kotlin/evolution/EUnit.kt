@@ -18,7 +18,6 @@ abstract class EUnit(
     var xDirection: Float,
     var yDirection: Float,
     var size: Float,
-    var color: Color,
 ) {
     //private var coroutineScope = CoroutineScope(Dispatchers.Default)
     // All units operate in the bounds of 0 to 100. This is converted to pixels when rendered
@@ -32,6 +31,15 @@ abstract class EUnit(
     var isActive = true // determines if unit can be interacted with
 
     var coroutineScope = CoroutineScope(Dispatchers.Default)
+
+    var quadrant: Int = 0
+        get() {
+
+            return if (xPos<50 && yPos<50) 0 // Top left
+            else if (xPos>=50 && yPos<50) 1 // Top right
+            else if (xPos<50 && yPos>=50) 2 // Bottom left
+            else 3 // Bottom right
+        }
 
     fun handleWallCollision(): Boolean {
         var isCollision = false
@@ -101,6 +109,16 @@ data class GeneticAttribute(
 
 fun Float.toGenetic() = GeneticAttribute(this)
 
+class Colors {
+    companion object {
+        val defaultColor = Color(0xff4285f4) // Blue
+        val huntColor = Color(0xffea4335) // Red
+        val fleeColor = Color(0xff34a853) // Green
+        val reproduceColor = Color(0xfffbbc05) // Yellow
+        val deathColor = Color(0xFF222424) // Dark grey
+    }
+
+}
 
 class LiveUnit(xPos: Float,
                yPos: Float,
@@ -108,7 +126,6 @@ class LiveUnit(xPos: Float,
                xDirection: Float,
                yDirection: Float,
                size: Float,
-               color: Color,
                var energy: Float = 100f,
                var energyEfficiency: Float = 1f,
                var sight: Float = 5f):
@@ -117,9 +134,15 @@ class LiveUnit(xPos: Float,
         speed,
         xDirection,
         yDirection,
-        size,
-        color) {
+        size) {
 
+    var color = Colors.defaultColor
+        get() {
+            if (target!=null) return Colors.huntColor
+            return field
+        }
+    var target: EUnit? = null
+    var predator: EUnit? = null
     val geneticAttributes = mutableSetOf<GeneticAttribute>()
     val uniqueActionQueue: Queue<LiveUnitAction> = LinkedList()
 
@@ -136,7 +159,7 @@ class LiveUnit(xPos: Float,
 
         if (energy<=0) {
             val deathAction = DeathAction()
-            actionQueue.add(deathAction)
+            uniqueActionQueue.add(deathAction)
         }
 
         val collision = handleWallCollision()
@@ -144,6 +167,11 @@ class LiveUnit(xPos: Float,
             val bounceAction = BounceAction()
             actionQueue.add(bounceAction)
         }
+
+        target?.let {
+            if (it.isActive) follow(it)
+            else target = null
+        } // need to null check like this
 
         executeCommonActions()
         executeUniqueActions()
@@ -179,7 +207,6 @@ class LiveUnit(xPos: Float,
             xDirection = randomInRange(-1f, 1f),
             yDirection = randomInRange(-1f, 1f),
             size = size,
-            color = color,
             energy = energy,
             energyEfficiency = energyEfficiency
         )
@@ -201,13 +228,16 @@ class LiveUnit(xPos: Float,
 
         val dist = abs(this.distance(unit)) - (this.size + unit.size)/2
         if (dist <= this.sight) {
-            val xDiff = unit.xPos - this.xPos
-            val yDiff = unit.yPos - this.yPos
-
-            this.xDirection = xDiff/(abs(xDiff) + abs(yDiff))
-            this.yDirection = yDiff/(abs(xDiff) + abs(yDiff))
+            this.target = unit
         }
+    }
 
+    private fun follow(unit: EUnit) {
+        val xDiff = unit.xPos - this.xPos
+        val yDiff = unit.yPos - this.yPos
+
+        this.xDirection = xDiff/(abs(xDiff) + abs(yDiff))
+        this.yDirection = yDiff/(abs(xDiff) + abs(yDiff))
     }
 
 
@@ -221,16 +251,14 @@ class FoodUnit(xPos: Float,
                xDirection: Float,
                yDirection: Float,
                size: Float,
-               color: Color,
                var energy: Float): EUnit(xPos,
                                     yPos,
                                     speed,
                                     xDirection,
                                     yDirection,
-                                    size,
-                                    color) {
+                                    size) {
 
-
+    var color = Color.Magenta
     val uniqueActionQueue: Queue<FoodUnitAction> = LinkedList()
     override fun step() {
         xPos += xDirection * speed
