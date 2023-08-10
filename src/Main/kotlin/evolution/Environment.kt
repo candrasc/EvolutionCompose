@@ -35,7 +35,7 @@ class Environment {
     var foodPerSecond = 4
 
     val energyReproductionThreshold = 80f
-    val mutationProba = 0.10f
+    val mutationProba = 0.2f
 
     var liveUnits = mutableSetOf<LiveUnit>()
     var foodUnits = mutableSetOf<FoodUnit>()
@@ -183,8 +183,8 @@ class Environment {
             yDirection = randomInRange(-1f, 1f),
             size = 2f,
             energy = energyReproductionThreshold - 1,
-            energyEfficiency = GeneticAttribute(randomInRange(10f, 90f), 0.01f),
-            sight = GeneticAttribute(randomInRange(1f, 60f), 0.1f)
+            energyEfficiency = GeneticAttribute(randomInRange(1f, 100f), 0.009f),
+            sight = GeneticAttribute(randomInRange(1f, 100f), 0.05f)
         )
         liveUnits.add(unit)
     }

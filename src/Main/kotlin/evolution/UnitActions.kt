@@ -82,3 +82,30 @@ class EatAction(private val foodUnit: FoodUnit): LiveUnitAction {
         foodUnit.isAlive = false
     }
 }
+
+class MutateAnimationAction: LiveUnitAction {
+
+    override suspend fun runAction(unit: LiveUnit) {
+
+        unit.isActive = false
+        val originalSpeed = unit.speed
+        val originalEnergy = unit.energy
+
+        unit.speed = 0f
+
+        repeat(6) {
+            unit.color = Color.Magenta
+            delay(100)
+            unit.color = Color.Blue
+            delay(100)
+            unit.color = Color.Gray
+            delay(100)
+            unit.color = Color.Cyan
+            delay(100)
+        }
+        unit.speed = originalSpeed
+        unit.energy = originalEnergy
+        unit.color = Colors.defaultColor
+        unit.isActive = true
+    }
+}

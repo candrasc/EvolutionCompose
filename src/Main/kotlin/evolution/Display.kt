@@ -86,8 +86,8 @@ fun Display(environment: Environment, sizeDp: Dp) {
                             // this is called when the user completed selecting the value
                             environment.startingLiveUnits = numStartingUnits
                         },
-                        valueRange = 0f..1000f,
-                        steps = 1000,
+                        valueRange = 0f..500f,
+                        steps = 500,
                         colors = SliderDefaults.colors(
                             thumbColor = Color(0xFF4552B8),
                             activeTrackColor = Color(0xFF9FB8E0),

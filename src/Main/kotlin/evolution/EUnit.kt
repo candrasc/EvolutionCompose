@@ -98,7 +98,7 @@ abstract class EUnit(
 }
 
 data class GeneticAttribute(
-    val value: Float,
+    var value: Float,
     val scaler: Float
 ) {
 
@@ -108,10 +108,8 @@ data class GeneticAttribute(
         }
     }
 
-    val scaledValue = value
-        get() {
-            return field * scaler
-        }
+    val scaledValue = value * scaler
+
 }
 
 class Colors {
@@ -132,8 +130,8 @@ class LiveUnit(xPos: Float,
                yDirection: Float,
                size: Float,
                var energy: Float = 100f,
-               var energyEfficiency: GeneticAttribute = GeneticAttribute(50f,  0.01f),
-               var sight: GeneticAttribute = GeneticAttribute(50f,  0.1f)):
+               var energyEfficiency: GeneticAttribute,
+               var sight: GeneticAttribute):
     EUnit(xPos,
         yPos,
         speed,
@@ -148,14 +146,12 @@ class LiveUnit(xPos: Float,
         }
     var target: EUnit? = null
     var predator: EUnit? = null
-    val geneticAttributes = mutableSetOf<GeneticAttribute>()
+    val geneticAttributes = mutableSetOf(energyEfficiency, sight)
     val uniqueActionQueue: Queue<LiveUnitAction> = LinkedList()
 
-
-    //TODO: All these attributes need setters so that they can be properly bounded
-    // for example, y direction + x direction should not exceed 1
-    // energy should not exceed 100
-    // energy decay must be greater than 0.1
+    init {
+        normalizeGeneticAttributes()
+    }
 
     override fun step() {
         xPos += xDirection * speed
@@ -196,11 +192,25 @@ class LiveUnit(xPos: Float,
         uniqueActionQueue.add(eatAction)
     }
 
-    fun mutate(mutationProba: Float) {
+    fun mutate() {
+        """
+            Mutate a random trait
+        """.trimIndent()
 
-        // each trait out of 100
-        // then multiply them by some static value
-        // rand each out of 100 and softmax it
+        val geneticAttribute = geneticAttributes.random()
+        geneticAttribute.value = randomInRange(1f, 100f)
+
+        normalizeGeneticAttributes()
+
+        uniqueActionQueue.add(MutateAnimationAction())
+
+    }
+
+    private fun normalizeGeneticAttributes() {
+        val totalValue = geneticAttributes.sumOf { it.value.toDouble() }
+        geneticAttributes.forEach {
+            it.value = (it.value/totalValue * 100).toFloat()
+        }
 
     }
     fun copy(): LiveUnit {
@@ -213,13 +223,16 @@ class LiveUnit(xPos: Float,
             yDirection = randomInRange(-1f, 1f),
             size = size,
             energy = energy,
-            energyEfficiency = energyEfficiency
+            energyEfficiency = energyEfficiency,
+            sight = sight
         )
     }
 
     fun reproduce(mutationProba: Float = 0.10f): LiveUnit {
         val newUnit = this@LiveUnit.copy()
-        newUnit.mutate(mutationProba)
+        if (randomInRange(0f,1f) < mutationProba) {
+            newUnit.mutate()
+        }
 
         val newEnergy = energy/2
         newUnit.energy = newEnergy
