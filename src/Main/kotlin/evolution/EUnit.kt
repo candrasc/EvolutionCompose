@@ -98,16 +98,21 @@ abstract class EUnit(
 }
 
 data class GeneticAttribute(
-    val attribute: Float
+    val value: Float,
+    val scaler: Float
 ) {
+
     init {
-        if (attribute<0 || attribute>100) {
+        if (value<0 || value>100) {
             throw IllegalArgumentException("Attribute must be between 0 and 100")
         }
     }
-}
 
-fun Float.toGenetic() = GeneticAttribute(this)
+    val scaledValue = value
+        get() {
+            return field * scaler
+        }
+}
 
 class Colors {
     companion object {
@@ -127,8 +132,8 @@ class LiveUnit(xPos: Float,
                yDirection: Float,
                size: Float,
                var energy: Float = 100f,
-               var energyEfficiency: Float = 1f,
-               var sight: Float = 5f):
+               var energyEfficiency: GeneticAttribute = GeneticAttribute(50f,  0.01f),
+               var sight: GeneticAttribute = GeneticAttribute(50f,  0.1f)):
     EUnit(xPos,
         yPos,
         speed,
@@ -155,7 +160,7 @@ class LiveUnit(xPos: Float,
     override fun step() {
         xPos += xDirection * speed
         yPos += yDirection * speed
-        energy -= (1-energyEfficiency)
+        energy -= (1-energyEfficiency.scaledValue)
 
         if (energy<=0) {
             val deathAction = DeathAction()
@@ -226,8 +231,10 @@ class LiveUnit(xPos: Float,
 
     fun checkFollow(unit: EUnit) {
 
+        if (this.target!=null) return
+
         val dist = abs(this.distance(unit)) - (this.size + unit.size)/2
-        if (dist <= this.sight) {
+        if (dist <= this.sight.scaledValue) {
             this.target = unit
         }
     }

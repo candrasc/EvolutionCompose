@@ -53,10 +53,10 @@ class Environment {
         get() = liveUnits.size
 
     var averageSight: Double = 0.0
-        get() = liveUnits.sumOf { it.sight.toDouble()/numLiveUnits }.round()
+        get() = liveUnits.sumOf { it.sight.value.toDouble()/numLiveUnits }.round()
 
     var averageEnergyEfficiency: Double = 0.0
-        get() = liveUnits.sumOf { it.energyEfficiency.toDouble()/numLiveUnits }.round()
+        get() = liveUnits.sumOf { it.energyEfficiency.value.toDouble()/numLiveUnits }.round()
 
 
 
@@ -182,8 +182,8 @@ class Environment {
             yDirection = randomInRange(-1f, 1f),
             size = 2f,
             energy = energyReproductionThreshold - 1,
-            energyEfficiency = randomInRange(0.1f, 0.9f),
-            sight = randomInRange(0.1f, 5f)
+            energyEfficiency = GeneticAttribute(randomInRange(10f, 90f), 0.01f),
+            sight = GeneticAttribute(randomInRange(1f, 60f), 0.1f)
         )
         liveUnits.add(unit)
     }

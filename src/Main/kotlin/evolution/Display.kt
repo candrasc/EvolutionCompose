@@ -181,7 +181,7 @@ fun Display(environment: Environment, sizeDp: Dp) {
                             drawCircle(
                                 alpha = 0.1f,
                                 color = unit.color,
-                                radius = ((unit.sight) / 100 * canvasHeightPx),
+                                radius = ((unit.sight.scaledValue) / 100 * canvasHeightPx),
                                 center = Offset(unit.xPos / 100 * canvasHeightPx, unit.yPos / 100 * canvasHeightPx),
                             )
                         }
