@@ -133,7 +133,7 @@ class Environment {
         val liveQuadrants = liveUnits.groupBy { it.quadrant }
         val foodQuadrants = foodUnits.groupBy { it.quadrant }
 
-        for (quadrant in liveQuadrants.keys) {
+        for (quadrant in 0..4) {
             //coroutineScope.launch{
                 var liveQuad = liveQuadrants[quadrant]
                 var foodQuad = foodQuadrants[quadrant]
