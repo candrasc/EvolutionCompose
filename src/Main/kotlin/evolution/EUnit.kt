@@ -163,6 +163,7 @@ class LiveUnit(xPos: Float,
 
     init {
         normalizeGeneticAttributes()
+        normalizeDirection()
     }
 
     override fun step() {
@@ -293,12 +294,19 @@ class LiveUnit(xPos: Float,
         return dist <= this.sight.scaledValue
     }
 
+    private fun normalizeDirection() {
+        val xDir = xDirection/(abs(xDirection) + abs(yDirection))
+        val yDir = yDirection/(abs(xDirection) + abs(yDirection))
+        xDirection = xDir
+        yDirection = yDir
+    }
     private fun follow(unit: EUnit) {
-        val xDiff = unit.xPos - this.xPos
-        val yDiff = unit.yPos - this.yPos
+        xDirection = unit.xPos - this.xPos
+        yDirection = unit.yPos - this.yPos
 
-        this.xDirection = xDiff/(abs(xDiff) + abs(yDiff))
-        this.yDirection = yDiff/(abs(xDiff) + abs(yDiff))
+        normalizeDirection()
+
+
     }
 
     private fun flee(unit: EUnit) {
