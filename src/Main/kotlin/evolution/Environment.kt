@@ -34,6 +34,7 @@ class Environment {
     var foodValue = 60
     var foodPerSecond = 4
 
+    val energyLossPerStep = 0.7f
     val energyReproductionThreshold = 80f
     val mutationProba = 0.2f
 
@@ -203,8 +204,8 @@ class Environment {
             yDirection = randomInRange(-1f, 1f),
             size = 2f,
             energy = energyReproductionThreshold - 1,
-            //TODO: UNHARDOCODE EFFECIENCY FROM UNIT CLASS
-            energyEfficiency = GeneticAttribute(randomInRange(50f, 100f), 0.009f),
+            energyLossPerStep = energyLossPerStep,
+            energyEfficiency = GeneticAttribute(randomInRange(50f, 100f), 0.00999f),
             sight = GeneticAttribute(randomInRange(1f, 100f), 0.09f),
             strength = GeneticAttribute(randomInRange(1f, 100f), 1f)
         )

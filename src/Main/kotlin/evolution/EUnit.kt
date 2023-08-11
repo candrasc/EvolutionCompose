@@ -134,6 +134,7 @@ class LiveUnit(xPos: Float,
                xDirection: Float,
                yDirection: Float,
                size: Float,
+               var energyLossPerStep: Float,
                var energy: Float = 100f,
                var energyEfficiency: GeneticAttribute,
                var sight: GeneticAttribute,
@@ -169,9 +170,7 @@ class LiveUnit(xPos: Float,
     override fun step() {
         xPos += xDirection * speed
         yPos += yDirection * speed
-        //energy -= (1-energyEfficiency.scaledValue)
-        //TODO: Fix energy scale so no need to hardcode
-        energy -= 0.35f
+        energy -= (1-energyEfficiency.scaledValue) * energyLossPerStep
 
         if (energy<=0) {
             val deathAction = DeathAction()
@@ -256,6 +255,7 @@ class LiveUnit(xPos: Float,
             yDirection = randomInRange(-1f, 1f),
             size = size,
             energy = energy,
+            energyLossPerStep = energyLossPerStep,
             energyEfficiency = energyEfficiency.copy(),
             sight = sight.copy(),
             strength = strength.copy()
