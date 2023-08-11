@@ -29,9 +29,9 @@ Adding attacking.
 
 class Environment {
 
-    var startingLiveUnits = 50
+    var startingLiveUnits = 30
     val startFoodUnits = 1
-    val foodValue = 30f
+    var foodValue = 60
     var foodPerSecond = 4
 
     val energyReproductionThreshold = 80f
@@ -58,6 +58,8 @@ class Environment {
     var averageEnergyEfficiency: Double = 0.0
         get() = liveUnits.sumOf { it.energyEfficiency.value.toDouble()/numLiveUnits }.round()
 
+    var averageStrength: Double = 0.0
+        get() = liveUnits.sumOf { it.strength.value.toDouble()/numLiveUnits }.round()
 
 
     fun stepQuadrant(quadLiveUnits: List<LiveUnit>, quadFoodUnits: List<FoodUnit>) {
@@ -99,6 +101,24 @@ class Environment {
 
                 liveUnit.checkFollow(food)
 
+            }
+
+            quadLiveUnits.forEach LiveLoop@ { subLiveUnit ->
+                if (!subLiveUnit.isActive || subLiveUnit==liveUnit) (return@LiveLoop)
+
+                /*
+                If liveUnit is stronger than sub unit, eat it if possible and if not try to follow.
+                If weaker, the sub unit will instead check if it needs to flee
+                 */
+                if (liveUnit.strength.value>subLiveUnit.strength.value) {
+                    if (checkUnitCollision(subLiveUnit, liveUnit)) {
+                        liveUnit.eat(subLiveUnit)
+                    }
+                    else {
+                        liveUnit.checkFollow(subLiveUnit)
+                        subLiveUnit.checkFlee(liveUnit)
+                    }
+                }
             }
 
         }
@@ -183,9 +203,12 @@ class Environment {
             yDirection = randomInRange(-1f, 1f),
             size = 2f,
             energy = energyReproductionThreshold - 1,
-            energyEfficiency = GeneticAttribute(randomInRange(1f, 100f), 0.009f),
-            sight = GeneticAttribute(randomInRange(1f, 100f), 0.05f)
+            //TODO: UNHARDOCODE EFFECIENCY FROM UNIT CLASS
+            energyEfficiency = GeneticAttribute(randomInRange(50f, 100f), 0.009f),
+            sight = GeneticAttribute(randomInRange(1f, 100f), 0.09f),
+            strength = GeneticAttribute(randomInRange(1f, 100f), 1f)
         )
+
         liveUnits.add(unit)
     }
 
@@ -203,7 +226,7 @@ class Environment {
             xDirection = randomInRange(-1f, 1f),
             yDirection = randomInRange(-1f, 1f),
             size = 2f,
-            energy = foodValue,
+            energy = foodValue.toFloat(),
         )
         foodUnits.add(food)
 

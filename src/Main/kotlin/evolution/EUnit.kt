@@ -29,6 +29,10 @@ abstract class EUnit(
     val actionQueue: Queue<CommonUnitAction> = LinkedList()
     var isAlive = true // determines if unit exists in env
     var isActive = true // determines if unit can be interacted with
+    var target: EUnit? = null
+    var targeter: EUnit? = null
+    open var color: Color = Colors.defaultColor
+
 
     var coroutineScope = CoroutineScope(Dispatchers.Default)
 
@@ -108,7 +112,7 @@ data class GeneticAttribute(
         }
     }
 
-    val scaledValue = value * scaler
+    val scaledValue get() = value * scaler
 
 }
 
@@ -116,9 +120,10 @@ class Colors {
     companion object {
         val defaultColor = Color(0xff4285f4) // Blue
         val huntColor = Color(0xffea4335) // Red
-        val fleeColor = Color(0xff34a853) // Green
-        val reproduceColor = Color(0xfffbbc05) // Yellow
+        val huntFoodColor = Color(0xff34a853) // Green
+        val fleeColor = Color(0xfffbbc05) // Yellow
         val deathColor = Color(0xFF222424) // Dark grey
+        val newBorn = Color(0xFF959ADE)
     }
 
 }
@@ -131,7 +136,8 @@ class LiveUnit(xPos: Float,
                size: Float,
                var energy: Float = 100f,
                var energyEfficiency: GeneticAttribute,
-               var sight: GeneticAttribute):
+               var sight: GeneticAttribute,
+               var strength: GeneticAttribute):
     EUnit(xPos,
         yPos,
         speed,
@@ -139,14 +145,20 @@ class LiveUnit(xPos: Float,
         yDirection,
         size) {
 
-    var color = Colors.defaultColor
+    override var color = Colors.defaultColor
         get() {
-            if (target!=null) return Colors.huntColor
+
+            if (targeter!=null) return Colors.fleeColor
+
+            else if (target!=null) {
+                if (target!!::class == LiveUnit::class) return Colors.huntColor
+                else if (target!!::class == FoodUnit::class) return Colors.huntFoodColor
+            }
+
             return field
         }
-    var target: EUnit? = null
-    var predator: EUnit? = null
-    val geneticAttributes = mutableSetOf(energyEfficiency, sight)
+
+    val geneticAttributes = mutableSetOf(energyEfficiency, sight, strength)
     val uniqueActionQueue: Queue<LiveUnitAction> = LinkedList()
 
     init {
@@ -156,7 +168,9 @@ class LiveUnit(xPos: Float,
     override fun step() {
         xPos += xDirection * speed
         yPos += yDirection * speed
-        energy -= (1-energyEfficiency.scaledValue)
+        //energy -= (1-energyEfficiency.scaledValue)
+        //TODO: Fix energy scale so no need to hardcode
+        energy -= 0.35f
 
         if (energy<=0) {
             val deathAction = DeathAction()
@@ -168,14 +182,25 @@ class LiveUnit(xPos: Float,
             val bounceAction = BounceAction()
             actionQueue.add(bounceAction)
         }
-
-        target?.let {
-            if (it.isActive) follow(it)
-            else target = null
-        } // need to null check like this
+        //TODO: Unit needs to clear targeter and target when out of range or they just run into corner
+        if (targeter!=null) {
+            targeter?.let {
+                if (it.isActive) flee(it)
+                else targeter = null
+            }
+        }
+        else if (target!=null) {
+            target?.let {
+                if (it.isActive) follow(it)
+                else target = null
+            } // need to null check like this
+        }
 
         executeCommonActions()
         executeUniqueActions()
+
+        target = null
+        targeter = null
     }
 
     override fun executeUniqueActions() {
@@ -188,8 +213,15 @@ class LiveUnit(xPos: Float,
     }
 
     fun eat(food: FoodUnit) {
-        val eatAction = EatAction(food)
+        val eatAction = EatFoodAction(food)
         uniqueActionQueue.add(eatAction)
+    }
+
+    fun eat(prey: LiveUnit) {
+        this.energy += prey.energy
+        prey.energy = 0f
+        prey.uniqueActionQueue.add(DeathAction())
+
     }
 
     fun mutate() {
@@ -223,8 +255,9 @@ class LiveUnit(xPos: Float,
             yDirection = randomInRange(-1f, 1f),
             size = size,
             energy = energy,
-            energyEfficiency = energyEfficiency,
-            sight = sight
+            energyEfficiency = energyEfficiency.copy(),
+            sight = sight.copy(),
+            strength = strength.copy()
         )
     }
 
@@ -238,18 +271,26 @@ class LiveUnit(xPos: Float,
         newUnit.energy = newEnergy
         this@LiveUnit.energy = newEnergy
 
+        newUnit.actionQueue.add(InactiveAction(2000L))
         return newUnit
 
     }
 
     fun checkFollow(unit: EUnit) {
 
-        if (this.target!=null) return
+        if (canSee(unit))this.target = unit
 
+    }
+
+    fun checkFlee(unit: EUnit) {
+
+        if (canSee(unit)) targeter = unit
+
+    }
+
+    private fun canSee(unit: EUnit): Boolean {
         val dist = abs(this.distance(unit)) - (this.size + unit.size)/2
-        if (dist <= this.sight.scaledValue) {
-            this.target = unit
-        }
+        return dist <= this.sight.scaledValue
     }
 
     private fun follow(unit: EUnit) {
@@ -258,6 +299,13 @@ class LiveUnit(xPos: Float,
 
         this.xDirection = xDiff/(abs(xDiff) + abs(yDiff))
         this.yDirection = yDiff/(abs(xDiff) + abs(yDiff))
+    }
+
+    private fun flee(unit: EUnit) {
+        // Flee is just the opposite of follow
+        follow(unit)
+        this.xDirection *=-1
+        this.yDirection +=-1
     }
 
 
@@ -278,7 +326,7 @@ class FoodUnit(xPos: Float,
                                     yDirection,
                                     size) {
 
-    var color = Color.Magenta
+    override var color = Color.Magenta
     val uniqueActionQueue: Queue<FoodUnitAction> = LinkedList()
     override fun step() {
         xPos += xDirection * speed

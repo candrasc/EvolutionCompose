@@ -29,24 +29,16 @@ class BounceAction(val durationMilli: Long = 40L,
 
     override suspend fun runAction(unit: EUnit) {
 
-    preDelayAction(unit)
-    delay(durationMilli)
-    postDelayAction(unit)
-
-    }
-
-    private fun preDelayAction(unit: EUnit) {
+        val originalSize = unit.size
+        val originalSpeed = unit.speed
 
         unit.speed *= (1-slowPercentage)
-
-
         unit.size *= (1-shrinkPercentage)
-    }
+        delay(durationMilli)
+        unit.speed = originalSpeed
+        unit.size = originalSize
 
-    private fun postDelayAction(unit: EUnit) {
-        unit.speed /= (1-slowPercentage)
 
-        unit.size /= (1-shrinkPercentage)
     }
 
 }
@@ -58,7 +50,7 @@ class DeathAction: LiveUnitAction {
 
         unit.speed = 0f
 
-        unit.color = Colors.deathColor // Dark grey
+        unit.color = Colors.deathColor // Almost black
         unit.isActive = false
 
         delay(1500)
@@ -72,7 +64,7 @@ class DeathAction: LiveUnitAction {
 
 }
 
-class EatAction(private val foodUnit: FoodUnit): LiveUnitAction {
+class EatFoodAction(private val foodUnit: FoodUnit): LiveUnitAction {
     override suspend fun runAction(unit: LiveUnit) {
         unit.energy = min(100f, unit.energy + foodUnit.energy)
         foodUnit.color = Color.LightGray
@@ -93,7 +85,7 @@ class MutateAnimationAction: LiveUnitAction {
 
         unit.speed = 0f
 
-        repeat(6) {
+        repeat(4) {
             unit.color = Color.Magenta
             delay(100)
             unit.color = Color.Blue
@@ -105,6 +97,20 @@ class MutateAnimationAction: LiveUnitAction {
         }
         unit.speed = originalSpeed
         unit.energy = originalEnergy
+        unit.color = Colors.defaultColor
+        unit.isActive = true
+    }
+}
+
+class InactiveAction(val inactiveDuration: Long): CommonUnitAction {
+
+    override suspend fun runAction(unit: EUnit) {
+        val originalSpeed = unit.speed
+        unit.isActive = false
+        unit.color = Colors.newBorn
+        unit.speed = 0f
+        delay(inactiveDuration)
+        unit.speed = originalSpeed
         unit.color = Colors.defaultColor
         unit.isActive = true
     }

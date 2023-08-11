@@ -77,6 +77,10 @@ fun Display(environment: Environment, sizeDp: Dp) {
                         mutableStateOf(environment.foodPerSecond)
                     }
 
+                    var foodValue by remember {
+                        mutableStateOf(environment.foodValue)
+                    }
+
                     Slider(
                         value = numStartingUnits.toFloat(),
                         onValueChange = { sliderValue_ ->
@@ -86,8 +90,8 @@ fun Display(environment: Environment, sizeDp: Dp) {
                             // this is called when the user completed selecting the value
                             environment.startingLiveUnits = numStartingUnits
                         },
-                        valueRange = 0f..500f,
-                        steps = 500,
+                        valueRange = 0f..100f,
+                        steps = 100,
                         colors = SliderDefaults.colors(
                             thumbColor = Color(0xFF4552B8),
                             activeTrackColor = Color(0xFF9FB8E0),
@@ -135,6 +139,36 @@ fun Display(environment: Environment, sizeDp: Dp) {
                             }
                         }
                     )
+
+                    Slider(
+                        value = foodValue.toFloat(),
+                        onValueChange = { sliderValue ->
+                            foodValue = sliderValue.toInt()
+                        },
+                        onValueChangeFinished = {
+                            // this is called when the user completed selecting the value
+                            environment.foodValue = foodValue
+                        },
+                        valueRange = 0f..100f,
+                        steps = 20,
+                        colors = SliderDefaults.colors(
+                            thumbColor = Color(0xFF4552B8),
+                            activeTrackColor = Color(0xFF9FB8E0),
+
+                            )
+                    )
+
+                    Text(
+                        buildAnnotatedString {
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
+                            ) {
+                                append("Food Value: ")
+                            }
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.W900)) {
+                                append(foodValue.toString())
+                            }
+                        }
+                    )
                 }
             }
 
@@ -171,20 +205,27 @@ fun Display(environment: Environment, sizeDp: Dp) {
                 ) {
 
                     environment.liveUnits.forEach { unit ->
-                        drawCircle(
-                            alpha = 1.0f,
-                            color = unit.color,
-                            radius = (unit.size / 100 * canvasHeightPx) / 2,
-                            center = Offset(unit.xPos / 100 * canvasHeightPx, unit.yPos / 100 * canvasHeightPx),
-                        )
-                        if (unit.isActive) {
+                        try {
                             drawCircle(
-                                alpha = 0.1f,
+                                alpha = 1.0f,
                                 color = unit.color,
-                                radius = ((unit.sight.scaledValue) / 100 * canvasHeightPx),
+                                radius = (unit.size / 100 * canvasHeightPx) / 2,
                                 center = Offset(unit.xPos / 100 * canvasHeightPx, unit.yPos / 100 * canvasHeightPx),
                             )
+
+                            if (unit.isActive) {
+                                drawCircle(
+                                    alpha = 0.1f,
+                                    color = unit.color,
+                                    radius = ((unit.sight.scaledValue) / 100 * canvasHeightPx),
+                                    center = Offset(unit.xPos / 100 * canvasHeightPx, unit.yPos / 100 * canvasHeightPx),
+                                )
+                            }
+                        } catch (e: IllegalStateException) {
+                            println("bad offset. Unit doesn't exist. Bug introduced with strength and eating other units")
+                            println("${unit.xPos} ${unit.yPos}")
                         }
+
 
 
                     }
@@ -233,6 +274,7 @@ fun Display(environment: Environment, sizeDp: Dp) {
             MetricCard("Number of units", environment.numLiveUnits.toString())
             MetricCard("Average Sight", environment.averageSight.toString())
             MetricCard("Average Efficiency", environment.averageEnergyEfficiency.toString())
+            MetricCard("Average Strength", environment.averageStrength.toString())
         }
 
     }
