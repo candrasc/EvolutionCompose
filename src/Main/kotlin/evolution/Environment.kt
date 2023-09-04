@@ -199,7 +199,7 @@ class Environment {
 
             xPos = randomInRange(5f, 95f), // keep the edges from clipping through side
             yPos = randomInRange(5f, 95f),
-            speed = randomInRange(0.5f, 1f),
+            speed = 1f,
             xDirection = randomInRange(-1f, 1f),
             yDirection = randomInRange(-1f, 1f),
             size = 2f,

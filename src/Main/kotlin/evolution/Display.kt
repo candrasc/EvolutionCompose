@@ -184,7 +184,7 @@ fun Display(environment: Environment, sizeDp: Dp) {
                 text = environment.onUpdate.toString(),
                 fontWeight = FontWeight.Bold,
                 fontSize = 30.sp,
-                color = Color.Black
+                color = Color.White
             )
 
             Spacer(Modifier.height(16.dp))
@@ -195,6 +195,7 @@ fun Display(environment: Environment, sizeDp: Dp) {
             ) {
                 Canvas(
                     modifier = Modifier
+                        .background(Color(0xFFF7F7F7))
                         .onGloballyPositioned { coordinates ->
                             // Set column height using the LayoutCoordinates
                             canvasHeightPx = coordinates.size.height.toFloat()

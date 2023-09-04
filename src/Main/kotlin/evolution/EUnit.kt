@@ -173,16 +173,14 @@ class LiveUnit(xPos: Float,
         energy -= (1-energyEfficiency.scaledValue) * energyLossPerStep
 
         if (energy<=0) {
-            val deathAction = DeathAction()
-            uniqueActionQueue.add(deathAction)
+            uniqueActionQueue.add(DeathAction())
         }
 
         val collision = handleWallCollision()
         if (collision) {
-            val bounceAction = BounceAction()
-            actionQueue.add(bounceAction)
+            actionQueue.add(BounceAction())
         }
-        //TODO: Unit needs to clear targeter and target when out of range or they just run into corner
+
         if (targeter!=null) {
             targeter?.let {
                 if (it.isActive) flee(it)
@@ -225,9 +223,8 @@ class LiveUnit(xPos: Float,
     }
 
     fun mutate() {
-        """
-            Mutate a random trait
-        """.trimIndent()
+    //Mutate a random trait
+
 
         val geneticAttribute = geneticAttributes.random()
         geneticAttribute.value = randomInRange(1f, 100f)
@@ -313,7 +310,7 @@ class LiveUnit(xPos: Float,
         // Flee is just the opposite of follow
         follow(unit)
         this.xDirection *=-1
-        this.yDirection +=-1
+        this.yDirection *=-1
     }
 
 

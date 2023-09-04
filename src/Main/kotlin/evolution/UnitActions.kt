@@ -81,7 +81,6 @@ class MutateAnimationAction: LiveUnitAction {
 
         unit.isActive = false
         val originalSpeed = unit.speed
-        val originalEnergy = unit.energy
 
         unit.speed = 0f
 
@@ -96,7 +95,6 @@ class MutateAnimationAction: LiveUnitAction {
             delay(100)
         }
         unit.speed = originalSpeed
-        unit.energy = originalEnergy
         unit.color = Colors.defaultColor
         unit.isActive = true
     }
